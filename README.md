@@ -1,42 +1,9 @@
-# Nuxt 3 Minimal Starter
+# Chat with your Documents using Nuxt3 + TypeScript + LangChain + Hnswlib + OpenAI
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Preview
+![image](https://user-images.githubusercontent.com/86616781/233838482-7c0b3979-5793-4d92-aa40-07a641e14d2d.png)
 
-## Setup
+### Ingest own documents
+1. Create folder `docs` in `server/` and place all your .pdf files there
+2. Run `npm run dev` to start the dev-server. On the first startup it will check if `docs` exists. If so, it will then create the vectors for those files. You can then start asking some questions
 
-Make sure to install the dependencies:
-
-```bash
-# yarn
-yarn install
-
-# npm
-npm install
-
-# pnpm
-pnpm install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`
-
-```bash
-npm run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

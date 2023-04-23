@@ -1,6 +1,6 @@
 <template>
     <div class="h-[100vh] bg-[#333] text-white p-4 flex flex-col gap-2">
-        <div class="history w-full h-[100vh] overflow-auto flex flex-col gap-1">
+        <div class="history w-full h-[100vh] overflow-auto flex flex-col gap-4">
             <ChatItem
                 v-for="chatItem in chatHistory"
                 :chat-item="chatItem"
@@ -8,28 +8,20 @@
         </div>
 
         <div class="controls flex flex-col justify-center items-center">
-            <div v-if="broken">
-                <button
-                    class="bg-white text-gray-900 px-2 py-0.5 uppercase hover:bg-gray-200"
-                    @click="reset"
-                >
-                    reset
-                </button>
-            </div>
             <form
                 @submit.prevent="send"
-                class="new-message p-2 flex justify-center items-center gap-2"
+                class="new-message p-2 flex justify-center items-center gap-2 w-full"
             >
-                <input
-                    :disabled="loading || broken"
+                <textarea
+                    :disabled="loading"
                     type="text"
                     v-model="currentMessage"
-                    class="text-gray-900 px-1 outline-none border border-transparent focus:border-black disabled:cursor-not-allowed"
+                    class="text-gray-900 p-2 outline-none border border-transparent focus:border-black disabled:cursor-not-allowed w-full"
                     placeholder="Your message"
-                />
+                ></textarea>
                 <button
-                    :disabled="loading || broken"
-                    class="bg-white text-gray-900 rounded-full w-7 h-7 flex justify-center items-center pr-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                    :disabled="loading"
+                    class="bg-white text-gray-900 rounded-full min-w-[1.75rem] min-h-[1.75rem] w-7 h-7 flex justify-center items-center pr-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <ClientOnly>
                         <font-awesome-icon icon="fa-solid fa-paper-plane" />
@@ -46,12 +38,18 @@ import { ChatRequest } from "~/types/request";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { _AsyncData } from "nuxt/dist/app/composables/asyncData";
 
-const chatHistory = ref<ChatItem[]>([]);
+const chatHistory = ref<ChatItem[]>([
+    {
+        fromHuman: false,
+        index: 0,
+        state: "finished",
+        text: "Wie kann ich dir helfen?",
+    },
+]);
 
 const currentMessage = ref("");
 
 const loading = ref(false);
-
 const broken = ref(false);
 
 const send = async () => {
@@ -61,26 +59,21 @@ const send = async () => {
         index: chatHistory.value.length,
         state: "finished",
     });
-
-    currentMessage.value = "";
-
     chatHistory.value.push({
         text: "",
         fromHuman: false,
         index: chatHistory.value.length,
         state: "typing",
     });
-
     const requestBody: ChatRequest = {
-        messages: chatHistory.value,
+        question: currentMessage.value,
     };
-
     const res = await useFetch("/api/openAiRequest", {
         method: "POST",
         body: requestBody,
         retry: false,
     });
-
+    currentMessage.value = "";
     handleAIResponse(res);
 };
 
@@ -107,7 +100,7 @@ const handleAIResponse = (res: _AsyncData<any, any>) => {
             return;
         }
 
-        newChatItem.text = res.data.value.message.content;
+        newChatItem.text = res.data.value.message;
         newChatItem.state = "finished";
         chatHistory.value.push(newChatItem);
         broken.value = false;
@@ -125,38 +118,19 @@ const handleAIResponse = (res: _AsyncData<any, any>) => {
         return;
     }
 
-    lastItem.text = res.data.value.message.content;
+    lastItem.text = res.data.value.message;
     lastItem.state = "finished";
     broken.value = false;
     loading.value = false;
 };
 
-const reset = async () => {
-    broken.value = false;
-    loading.value = true;
-    chatHistory.value = [];
-
-    const res = await useFetch("/api/openAiRequest", {
-        method: "POST",
-        body: {
-            initial: true,
-            messages: [
-                {
-                    fromHuman: true,
-                    text: "Hello! You are an AI that is designed to assist me. My name is Norman. Thank you for your service!",
-                    index: 0,
-                    state: "finished",
-                },
-            ],
-        },
-    });
-
-    handleAIResponse(res);
-};
-
 onMounted(async () => {
     setTimeout(async () => {
-        reset();
+        loading.value = true;
+        const res = await useFetch("/api/ingest");
+        console.log(res.data.value);
+        if (res.data.value?.error) broken.value = true;
+        loading.value = false;
     });
 });
 </script>

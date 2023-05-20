@@ -55,16 +55,17 @@ const props = defineProps<{
 
 const displayText = ref("");
 
-watch(props, async () => {
-    console.log(props.chatItem.text);
+watch(
+    () => props.chatItem.text,
+    async () => {
+        if (props.chatItem.text) {
+            const chunks = props.chatItem.text.split(" ");
 
-    if (props.chatItem.text) {
-        const chunks = props.chatItem.text.split(" ");
-
-        for (const chunk of chunks) {
-            await sleep(100);
-            displayText.value += `${chunk} `;
+            for (const chunk of chunks) {
+                await sleep(100);
+                displayText.value += `${chunk} `;
+            }
         }
     }
-});
+);
 </script>

@@ -1,15 +1,19 @@
 <template>
-    <div class="p-4 h-14 bg-[#222] text-white font-bold flex justify-between">
+    <div
+        class="p-4 h-14 bg-[#222] text-white font-bold flex justify-between items-center"
+    >
         <div class="title cursor-pointer" @click="router.push('/')">
             PDF aware chat bot
         </div>
 
-        <button
+        <!-- <button
+            v-if="!userState.user"
             class="p-2 bg-white text-black flex items-center justify-center"
-            @click="handleUserButtonClick"
+            @click="router.push('/login')"
         >
-            {{ userState.user ? "Logout" : "Login" }}
-        </button>
+            Login
+        </button> -->
+        <UserProfileDropdown v-if="userState.user" />
     </div>
 </template>
 
@@ -21,14 +25,4 @@ import { useUserState } from "~/stores/userState";
 const router = useRouter();
 
 const userState = useUserState();
-
-const handleUserButtonClick = () => {
-    if (userState.user) {
-        router.push("/");
-        signOut(auth);
-        return;
-    }
-
-    router.push("/login");
-};
 </script>

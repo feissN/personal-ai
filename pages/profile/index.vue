@@ -11,6 +11,19 @@
             </div>
             <div v-else>
                 <input type="file" ref="fileUploadRef" :multiple="false" />
+                <!-- Wenn ich hier schon einen namen geben kann will ich das auch richtig nutzen. 
+                Plan: Ein user kann mehrere Modelle haben.
+                Also: 
+                userId/
+                    - modell1
+                        - docs
+                        - index
+                    - modell2
+                        - docs
+                        - index
+
+                Und diese modells kann ich dann auch im chat auswählen
+             -->
                 <input
                     type="text"
                     placeholder="Model Name"

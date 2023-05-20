@@ -1,39 +1,46 @@
 import fs from "fs";
 import { OpenAI } from "langchain/llms/openai";
-import { RetrievalQAChain } from 'langchain/chains';
+import { RetrievalQAChain } from "langchain/chains";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { HNSWLib } from "langchain/vectorstores/hnswlib";
 import { ChatRequest } from "~/types/request";
-import { VECTOR_STORE_PATH } from "../consts/paths";
 import { sleep } from "../utils/global.utils";
 
-
 export default defineEventHandler(async (event) => {
-
     if (useRuntimeConfig().public.devMode) {
         await sleep(1000);
-        return { message: "DEBUG MESSAGE!" }
+
+        return { message: "DEBUG MESSAGE!" };
     }
 
     try {
         const model = new OpenAI({});
 
-        const { question } = await readBody<ChatRequest>(event);
+        const { question, userId } = await readBody<ChatRequest>(event);
+
+        const basePath = `./server/userDocs/${userId}`;
+        const vectorStorePath = `${basePath}/index`;
 
         let vectorStore;
-        if (fs.existsSync(VECTOR_STORE_PATH)) {
-            vectorStore = await HNSWLib.load(VECTOR_STORE_PATH, new OpenAIEmbeddings());
+        if (fs.existsSync(vectorStorePath)) {
+            vectorStore = await HNSWLib.load(
+                vectorStorePath,
+                new OpenAIEmbeddings()
+            );
         } else {
-            throw "Vector store does not exist. Try calling api/ingest first"
+            throw "Vector store does not exist. Try calling api/ingest first";
         }
 
-        const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
+        const chain = RetrievalQAChain.fromLLM(
+            model,
+            vectorStore.asRetriever()
+        );
 
         const res = await chain.call({
             query: question,
         });
 
-        return { message: res.text }
+        return { message: res.text };
     } catch (error) {
         // @ts-ignore unknown type
         console.error(error.response);
@@ -41,4 +48,4 @@ export default defineEventHandler(async (event) => {
         // @ts-ignore unknown type
         throw error.response;
     }
-})
+});

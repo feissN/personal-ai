@@ -4,10 +4,11 @@
         :class="
             chatItem.fromHuman ? 'flex-row-reverse self-end' : 'bg-gray-200'
         "
+        ref="itemRef"
     >
         <ClientOnly>
             <div
-                class="bg-gray-900 text-white rounded-full min-w-[1.75rem] w-7 h-7 flex items-center justify-center"
+                class="bg-gray-900 text-white rounded-full min-w-[1.75rem] w-7 h-7 flex items-center justify-center self-start"
             >
                 <font-awesome-icon
                     v-if="chatItem.fromHuman"
@@ -18,7 +19,7 @@
         </ClientOnly>
 
         <div
-            class="whitespace-pre-wrap"
+            class="whitespace-pre-wrap self-start"
             :class="
                 chatItem.state === 'canceled'
                     ? `text-red-500 before:content-['Error:_']`
@@ -26,6 +27,7 @@
             "
         >
             <span
+                class="word-break"
                 :class="
                     chatItem.state === 'typing' ||
                     (!chatItem.noBuild &&
@@ -53,6 +55,7 @@ const props = defineProps<{
     };
 }>();
 
+const itemRef = ref<HTMLDivElement>();
 const displayText = ref("");
 
 watch(
@@ -68,4 +71,18 @@ watch(
         }
     }
 );
+
+onMounted(() => {
+    setTimeout(() => {
+        itemRef.value?.scrollIntoView({
+            behavior: "smooth",
+        });
+    });
+});
 </script>
+
+<style scoped lang="scss">
+.word-break {
+    word-break: break-word;
+}
+</style>

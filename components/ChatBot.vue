@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-[#333] text-white p-4 flex flex-col gap-2 relative">
+    <div class="text-white flex flex-col gap-2 relative">
         <ChatHistory class="h-full" :chat-history="chatHistory" />
         <ChatInput @send="send" />
     </div>

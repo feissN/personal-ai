@@ -25,6 +25,7 @@
         "@fortawesome/free-solid-svg-icons": "^6.4.0",
         "@fortawesome/vue-fontawesome": "^3.0.3",
         "@pinia/nuxt": "^0.4.11",
+        "firebase": "^9.22.0",
         "hnswlib-node": "^1.4.2",
         "langchain": "^0.0.62",
         "openai": "^3.2.1",

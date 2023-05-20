@@ -5,5 +5,5 @@ type AppState = {
 }
 
 export const useAppStore = defineStore("appStore", {
-    state: () => ({ appState: "loading" } as AppState),
+    state: () => ({ appState: "ready" } as AppState),
 })

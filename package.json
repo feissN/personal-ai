@@ -1,24 +1,33 @@
 {
-  "name": "nuxt-app",
-  "private": true,
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
-  },
-  "devDependencies": {
-    "@types/node": "^18",
-    "autoprefixer": "^10.4.14",
-    "nuxt": "^3.4.2",
-    "postcss": "^8.4.23",
-    "tailwindcss": "^3.3.1"
-  },
-  "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^6.4.0",
-    "@fortawesome/vue-fontawesome": "^3.0.3",
-    "openai": "^3.2.1",
-    "sass": "^1.62.0"
-  }
+    "name": "nuxt-app",
+    "private": true,
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "ingest": "npx ts-node server/ingest"
+    },
+    "devDependencies": {
+        "@types/node": "^18.16.13",
+        "autoprefixer": "^10.4.14",
+        "nuxt": "^3.4.2",
+        "postcss": "^8.4.23",
+        "tailwindcss": "^3.3.1",
+        "ts-node": "^10.9.1",
+        "tslib": "^2.5.2",
+        "typescript": "^5.0.4"
+    },
+    "dependencies": {
+        "@formkit/auto-animate": "^1.0.0-beta.6",
+        "@fortawesome/free-solid-svg-icons": "^6.4.0",
+        "@fortawesome/vue-fontawesome": "^3.0.3",
+        "hnswlib-node": "^1.4.2",
+        "langchain": "^0.0.62",
+        "openai": "^3.2.1",
+        "pdf-parse": "^1.1.1",
+        "sass": "^1.62.0"
+    },
+    "type": "module"
 }

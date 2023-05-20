@@ -6,7 +6,6 @@ import { HNSWLib } from "langchain/vectorstores/hnswlib";
 import { ChatRequest } from "~/types/request";
 import { VECTOR_STORE_PATH } from "../consts/paths";
 
-
 export default defineEventHandler(async (event) => {
     try {
         const model = new OpenAI({});

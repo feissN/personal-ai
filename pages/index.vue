@@ -22,7 +22,7 @@
                         @keydown="handleInput"
                     ></textarea>
                     <button
-                        :disabled="loading"
+                        :disabled="loading || broken"
                         class="bg-white text-gray-900 rounded-full min-w-[1.75rem] min-h-[1.75rem] w-7 h-7 flex justify-center items-center pr-0.5 disabled:cursor-not-allowed disabled:opacity-50 self-end"
                     >
                         <ClientOnly>
@@ -93,6 +93,10 @@ const resizeTextArea = () => {
 };
 
 const send = async () => {
+    if (loading.value || broken.value) {
+        console.warn("Loading or broken");
+        return;
+    }
     loading.value = true;
 
     chatHistory.value.push({
@@ -171,7 +175,7 @@ const handleAIResponse = (res: _AsyncData<any, any>) => {
 onMounted(async () => {
     setTimeout(async () => {
         loading.value = true;
-        const res = await useFetch("/api/ingest");
+        const res = await useFetch("/api/checkIngest");
         console.log(res.data.value);
         if (res.data.value?.error) broken.value = true;
         loading.value = false;

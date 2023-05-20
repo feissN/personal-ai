@@ -117,7 +117,7 @@ const handleAIResponse = (res: _AsyncData<any, any>) => {
             return;
         }
 
-        newChatItem.text = res.data.value.message;
+        newChatItem.text = res.data.value.message.trim();
         newChatItem.state = "finished";
         chatHistory.value.push(newChatItem);
         appStore.appState = "ready";
@@ -133,7 +133,7 @@ const handleAIResponse = (res: _AsyncData<any, any>) => {
         return;
     }
 
-    lastItem.text = res.data.value.message;
+    lastItem.text = res.data.value.message.trim();
     lastItem.state = "finished";
     appStore.appState = "ready";
 };

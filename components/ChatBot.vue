@@ -1,9 +1,6 @@
 <template>
     <div class="bg-[#333] text-white p-4 flex flex-col gap-2 relative">
-        <LoadingOverlay :show="appStore.appState === 'loading'" />
-
         <ChatHistory class="h-full" :chat-history="chatHistory" />
-
         <ChatInput @send="send" />
     </div>
 </template>

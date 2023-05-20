@@ -12,14 +12,14 @@
                 @submit.prevent="send"
                 class="new-message p-2 flex justify-center items-center gap-2 w-full"
             >
-                <div class="p-2 border border-transparent focus-within:border-black bg-white flex items-center gap-2 flex-1">
+                <div class="p-2 border bg-white flex items-center gap-2 flex-1">
                     <textarea
-                        :disabled="loading"
+                        ref="textareaRef"
                         type="text"
                         v-model="currentMessage"
                         class="text-gray-900 outline-none disabled:cursor-not-allowed w-full resize-none h-6"
                         placeholder="Your message"
-                        @input="resizeTextArea"
+                        @keydown="handleInput"
                     ></textarea>
                     <button
                         :disabled="loading"
@@ -52,17 +52,49 @@ const chatHistory = ref<ChatItem[]>([
 
 const currentMessage = ref("");
 
+const textareaRef = ref<HTMLTextAreaElement>();
+
 const loading = ref(false);
 const broken = ref(false);
 
-const resizeTextArea = (e: Event) => {
-    const textarea = e.target as HTMLTextAreaElement;
+watch(currentMessage, () => {
+    setTimeout(() => {
+        resizeTextArea();
+    });
+});
 
-    textarea.style.height = ""; /* Reset the height*/
-    textarea.style.height = Math.min(textarea.scrollHeight + 2, 150) + "px";
+const handleInput = async (event: KeyboardEvent) => {
+    if (event.key !== "Enter") return;
+
+    if (loading.value || broken.value) {
+        event.preventDefault();
+        return;
+    }
+
+    if (!currentMessage.value.length) {
+        event.preventDefault();
+        return;
+    }
+
+    if (event.shiftKey) {
+        return;
+    }
+
+    event.preventDefault();
+    send();
+};
+
+const resizeTextArea = () => {
+    if (!textareaRef.value) return;
+
+    textareaRef.value.style.height = "";
+    textareaRef.value.style.height =
+        Math.min(textareaRef.value.scrollHeight + 2, 150) + "px";
 };
 
 const send = async () => {
+    loading.value = true;
+
     chatHistory.value.push({
         text: currentMessage.value,
         fromHuman: true,
@@ -78,17 +110,19 @@ const send = async () => {
     const requestBody: ChatRequest = {
         question: currentMessage.value,
     };
+
+    currentMessage.value = "";
+
     const res = await useFetch("/api/openAiRequest", {
         method: "POST",
         body: requestBody,
         retry: false,
     });
-    currentMessage.value = "";
     handleAIResponse(res);
 };
 
 const handleAIResponse = (res: _AsyncData<any, any>) => {
-    loading.value = false;
+    loading.value = true;
     console.log(res);
 
     const lastItem = chatHistory.value.at(-1);

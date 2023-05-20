@@ -1,7 +1,9 @@
 <template>
     <div
-        class="chat-item flex items-center gap-2 p-2 bg-white text-gray-900 max-w-[75%]"
-        :class="chatItem.fromHuman ? 'flex-row-reverse self-end' : 'bg-gray-200'"
+        class="chat-item flex items-center gap-2 p-2 bg-white text-gray-900 w-fit"
+        :class="
+            chatItem.fromHuman ? 'flex-row-reverse self-end' : 'bg-gray-200'
+        "
     >
         <ClientOnly>
             <div

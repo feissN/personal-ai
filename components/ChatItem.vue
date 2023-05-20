@@ -18,7 +18,6 @@
         </ClientOnly>
 
         <div
-            v-if="chatItem.state !== 'typing'"
             class="whitespace-pre-wrap"
             :class="
                 chatItem.state === 'canceled'
@@ -26,14 +25,23 @@
                     : ''
             "
         >
-            {{ chatItem.text }}
+            <span
+                :class="
+                    chatItem.state === 'typing' ||
+                    (!chatItem.noBuild &&
+                        displayText.trim() !== chatItem.text.trim())
+                        ? `after:w-2 after:h-5 after:bg-gray-700 after:content-[''] after:flex flex after:items-end after:animate-pulse`
+                        : ''
+                "
+                >{{ chatItem.noBuild ? chatItem.text : displayText }}</span
+            >
         </div>
-        <div v-else class="whitespace-pre-wrap">thinking...</div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { sleep } from "~/server/utils/global.utils";
 
 const props = defineProps<{
     chatItem: {
@@ -41,6 +49,22 @@ const props = defineProps<{
         fromHuman: boolean;
         index: number;
         state: "finished" | "canceled" | "typing";
+        noBuild?: boolean;
     };
 }>();
+
+const displayText = ref("");
+
+watch(props, async () => {
+    console.log(props.chatItem.text);
+
+    if (props.chatItem.text) {
+        const chunks = props.chatItem.text.split(" ");
+
+        for (const chunk of chunks) {
+            await sleep(100);
+            displayText.value += `${chunk} `;
+        }
+    }
+});
 </script>

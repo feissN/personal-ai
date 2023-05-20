@@ -3,4 +3,5 @@ export type ChatItem = {
     fromHuman: boolean;
     index: number;
     state: "finished" | "canceled" | "typing";
+    noBuild?: boolean
 };

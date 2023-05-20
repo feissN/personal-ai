@@ -5,9 +5,15 @@ export default defineEventHandler(async (event) => {
 
     if (useRuntimeConfig().public.devMode) {
         await sleep(1000);
+        // return ({
+        //     status: 501,
+        //     message: "Error!",
+        //     error: "No vector store found. Run 'npm run ingest' first - DEBUG"
+        // })
+
         return ({
             status: 200,
-            message: "Vector already exists! - DEBUG",
+            message: "Vector already exists!",
             error: null
         })
     }

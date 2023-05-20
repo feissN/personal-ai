@@ -7,7 +7,9 @@
 ## Setup
 1. Run `npm install`
 2. Create `.env` with `OPENAI_API_KEY=YOURAPIKEY`
-3.  Ingest own documents
+3. Ingest own documents
     1. Create folder `docs` in `server/` and place all your .pdf files there
-    2. Run `npm run dev` to start the dev-server. On the first startup it will check if `docs` exists. If so, it will then create the vectors for those files. You can then start asking some questions
+    2. Run `npm run ingest` to ingest the new docs into the vector store
+4. Start the dev-Server
+   1. Run `npm run dev`. On the first startup it will check if `docs` exists. If so, everything is fine and you can start chatting
 

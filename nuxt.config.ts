@@ -9,6 +9,8 @@ export default defineNuxtConfig({
     css: ['~/assets/css/main.scss', '@fortawesome/fontawesome-svg-core/styles.css'
     ],
     runtimeConfig: {
-        openAiApiKey: process.env.OPENAI_API_KEY
+        public: {
+            devMode: false
+        }
     }
 })

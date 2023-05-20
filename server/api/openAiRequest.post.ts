@@ -1,12 +1,20 @@
 import fs from "fs";
-import { OpenAI } from "langchain";
+import { OpenAI } from "langchain/llms/openai";
 import { RetrievalQAChain } from 'langchain/chains';
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { HNSWLib } from "langchain/vectorstores/hnswlib";
 import { ChatRequest } from "~/types/request";
 import { VECTOR_STORE_PATH } from "../consts/paths";
+import { sleep } from "../utils/global.utils";
+
 
 export default defineEventHandler(async (event) => {
+
+    if (useRuntimeConfig().public.devMode) {
+        await sleep(1000);
+        return { message: "DEBUG MESSAGE!" }
+    }
+
     try {
         const model = new OpenAI({});
 

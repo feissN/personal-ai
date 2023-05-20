@@ -12,21 +12,24 @@
                 @submit.prevent="send"
                 class="new-message p-2 flex justify-center items-center gap-2 w-full"
             >
-                <textarea
-                    :disabled="loading"
-                    type="text"
-                    v-model="currentMessage"
-                    class="text-gray-900 p-2 outline-none border border-transparent focus:border-black disabled:cursor-not-allowed w-full"
-                    placeholder="Your message"
-                ></textarea>
-                <button
-                    :disabled="loading"
-                    class="bg-white text-gray-900 rounded-full min-w-[1.75rem] min-h-[1.75rem] w-7 h-7 flex justify-center items-center pr-0.5 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    <ClientOnly>
-                        <font-awesome-icon icon="fa-solid fa-paper-plane" />
-                    </ClientOnly>
-                </button>
+                <div class="p-2 border border-transparent focus-within:border-black bg-white flex items-center gap-2 flex-1">
+                    <textarea
+                        :disabled="loading"
+                        type="text"
+                        v-model="currentMessage"
+                        class="text-gray-900 outline-none disabled:cursor-not-allowed w-full resize-none h-6"
+                        placeholder="Your message"
+                        @input="resizeTextArea"
+                    ></textarea>
+                    <button
+                        :disabled="loading"
+                        class="bg-white text-gray-900 rounded-full min-w-[1.75rem] min-h-[1.75rem] w-7 h-7 flex justify-center items-center pr-0.5 disabled:cursor-not-allowed disabled:opacity-50 self-end"
+                    >
+                        <ClientOnly>
+                            <font-awesome-icon icon="fa-solid fa-paper-plane" />
+                        </ClientOnly>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -51,6 +54,13 @@ const currentMessage = ref("");
 
 const loading = ref(false);
 const broken = ref(false);
+
+const resizeTextArea = (e: Event) => {
+    const textarea = e.target as HTMLTextAreaElement;
+
+    textarea.style.height = ""; /* Reset the height*/
+    textarea.style.height = Math.min(textarea.scrollHeight + 2, 150) + "px";
+};
 
 const send = async () => {
     chatHistory.value.push({

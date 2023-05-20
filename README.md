@@ -2,7 +2,7 @@
 ## Inspired and motivated by https://github.com/developersdigest/ and https://github.com/mayooear/
 
 ## Preview
-![image](https://user-images.githubusercontent.com/86616781/233838482-7c0b3979-5793-4d92-aa40-07a641e14d2d.png)
+![image](![image](https://github.com/feissN/personal-ai/assets/86616781/73747291-5ced-4674-806b-16f496bf683c))
 
 ## Setup
 1. Run `npm install`

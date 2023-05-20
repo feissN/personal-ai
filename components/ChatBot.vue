@@ -69,6 +69,7 @@ const checkUserDocs = async () => {
     }
 
     trainedModelsInfo.value = data.value;
+    selectedModel.value = trainedModelsInfo.value[0].modelName;
 };
 
 const selectModel = (modelName: string) => {

@@ -14,9 +14,10 @@ import { useUserState } from "./stores/userState";
 
 const userState = useUserState();
 
-onMounted(() => {
+onBeforeMount(() => {
     onAuthStateChanged(auth, (user) => {
         userState.user = user;
+        userState.loaded = true;
     });
 });
 </script>

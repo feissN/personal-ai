@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
 
 type AppState = {
-    appState: "ready" | "loading" | "thinking" | "broken"
+    appState: "ready" | "loading" | "thinking" | "broken",
+    authenticatingRoute: boolean
 }
 
 export const useAppStore = defineStore("appStore", {
-    state: () => ({ appState: "ready" } as AppState),
+    state: () => ({ appState: "ready", authenticatingRoute: false } as AppState),
 })

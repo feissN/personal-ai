@@ -1,6 +1,6 @@
 <template>
     <div class="app">
-        <LoadingOverlay :show="appStore.appState === 'loading'" />
+        <LoadingOverlay :show="appStore.appState === 'loading' || appStore.authenticatingRoute" />
 
         <NavBar />
 

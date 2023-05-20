@@ -6,10 +6,10 @@
         "dev": "nuxt dev",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
-        "postinstall": "nuxt prepare",
-        "ingest": "npx ts-node server/ingest"
+        "postinstall": "nuxt prepare"
     },
     "devDependencies": {
+        "@types/formidable": "^2.0.6",
         "@types/node": "^18.16.13",
         "autoprefixer": "^10.4.14",
         "nuxt": "^3.4.2",
@@ -26,6 +26,7 @@
         "@fortawesome/vue-fontawesome": "^3.0.3",
         "@pinia/nuxt": "^0.4.11",
         "firebase": "^9.22.0",
+        "formidable": "^2.1.1",
         "hnswlib-node": "^1.4.2",
         "langchain": "^0.0.62",
         "openai": "^3.2.1",

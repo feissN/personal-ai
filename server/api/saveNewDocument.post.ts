@@ -1,5 +1,6 @@
 import fs from "fs";
 import { ingest } from "../ingest";
+import { getPathsFrom } from "../utils/modelPath.utils";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody<{
@@ -8,9 +9,10 @@ export default defineEventHandler(async (event) => {
         modelName: string;
     }>(event);
 
-    const basePath = `./server/userDocs/${body.userId}`;
-    const baseDocPath = `${basePath}/docs`;
-    const baseIndexPath = `${basePath}/index`;
+    const { baseDocPath, baseIndexPath, baseInfoPath } = getPathsFrom(
+        body.userId,
+        body.modelName
+    );
     fs.mkdirSync(baseDocPath, { recursive: true });
     fs.mkdirSync(baseIndexPath, { recursive: true });
 
@@ -24,7 +26,7 @@ export default defineEventHandler(async (event) => {
     });
 
     fs.writeFileSync(
-        `${basePath}/info.json`,
+        baseInfoPath,
         JSON.stringify(
             {
                 modelName: body.modelName,

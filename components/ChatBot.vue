@@ -1,8 +1,13 @@
 <template>
     <div
-        v-if="botAvailable"
+        v-if="trainedModelsInfo.length"
         class="text-white flex flex-col gap-2 relative h-full"
     >
+        <ChatModelSelect
+            :models="trainedModelsInfo"
+            @select-model="selectModel"
+            class="w-full"
+        />
         <ChatHistory class="h-full" :chat-history="chatHistory" />
         <ChatInput @send="send" />
     </div>
@@ -26,6 +31,7 @@ import { sleep } from "~/server/utils/global.utils";
 import { useAppStore } from "~/stores/appState";
 import { useUserState } from "~/stores/userState";
 import type { ChatItem } from "~/types/chatItem";
+import { TrainedModelInfo } from "~/types/model";
 import { ChatRequest } from "~/types/request";
 
 const chatHistory = ref<ChatItem[]>([
@@ -42,19 +48,41 @@ const router = useRouter();
 const userState = useUserState();
 const appStore = useAppStore();
 
-const botAvailable = ref(false);
+const trainedModelsInfo = ref<TrainedModelInfo[]>([]);
+
+const selectedModel = ref("");
 
 const checkUserDocs = async () => {
-    if (!userState.user) return false;
+    if (!userState.user) return;
 
-    const { error, data } = await useFetch("/api/checkTrainedModel", {
-        method: "get",
-        query: { userId: userState.user.uid },
-    });
+    const { error, data } = await useFetch<TrainedModelInfo[]>(
+        "/api/checkTrainedModels",
+        {
+            method: "get",
+            query: { userId: userState.user.uid },
+        }
+    );
 
-    if (error.value || !data.value) return false;
+    if (error.value || !data.value) {
+        trainedModelsInfo.value = [];
+        return;
+    }
 
-    return true;
+    trainedModelsInfo.value = data.value;
+};
+
+const selectModel = (modelName: string) => {
+    selectedModel.value = modelName;
+
+    chatHistory.value = [
+        {
+            fromHuman: false,
+            index: 0,
+            state: "finished",
+            text: "Wie kann ich dir helfen?",
+            noBuild: true,
+        },
+    ];
 };
 
 const send = async (message: string) => {
@@ -84,6 +112,7 @@ const send = async (message: string) => {
     const requestBody: ChatRequest = {
         question: message,
         userId: userState.user.uid,
+        modelName: selectedModel.value,
     };
 
     // TODO: Use the model of the current user (if the model exists)
@@ -141,10 +170,8 @@ const handleAIResponse = (res: _AsyncData<any, any>) => {
 onMounted(async () => {
     setTimeout(async () => {
         appStore.appState = "loading";
-        const ready = await checkUserDocs();
-        botAvailable.value = ready;
-        if (ready) return (appStore.appState = "ready");
-        appStore.appState = "broken";
+        await checkUserDocs();
+        appStore.appState = "ready";
     });
 });
 </script>

@@ -2,5 +2,6 @@ import { ChatItem } from "./chatItem";
 
 export type ChatRequest = {
     question: string;
-    userId: string
+    userId: string,
+    modelName: string
 }

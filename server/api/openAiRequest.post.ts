@@ -16,15 +16,19 @@ export default defineEventHandler(async (event) => {
     try {
         const model = new OpenAI({});
 
-        const { question, userId } = await readBody<ChatRequest>(event);
+        const { question, userId, modelName } = await readBody<ChatRequest>(
+            event
+        );
 
-        const basePath = `./server/userDocs/${userId}`;
-        const vectorStorePath = `${basePath}/index`;
+        const { baseDocPath, baseIndexPath, baseInfoPath } = getPathsFrom(
+            userId,
+            modelName
+        );
 
         let vectorStore;
-        if (fs.existsSync(vectorStorePath)) {
+        if (fs.existsSync(baseIndexPath)) {
             vectorStore = await HNSWLib.load(
-                vectorStorePath,
+                baseIndexPath,
                 new OpenAIEmbeddings()
             );
         } else {

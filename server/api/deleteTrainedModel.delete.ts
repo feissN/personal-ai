@@ -1,33 +1,16 @@
 import fs from "fs";
 import path from "path";
+import { getPathsFrom } from "../utils/modelPath.utils";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody<{
         userId: string;
+        modelName: string;
     }>(event);
 
-    const basePath = `./server/userDocs/${body.userId}`;
-    const baseDocPath = `${basePath}/docs`;
-    const baseIndexPath = `${basePath}/index`;
-    const infoFilePath = `${basePath}/info.json`;
+    const { basePath } = getPathsFrom(body.userId, body.modelName);
 
-    fs.readdir(baseDocPath, (err, files) => {
-        if (err) throw err;
-
-        for (const file of files) {
-            fs.unlinkSync(path.join(baseDocPath, file));
-        }
-    });
-
-    // Add again for later
-    // fs.readdir(baseIndexPath, (err, files) => {
-    //     if (err) throw err;
-    //     for (const file of files) {
-    // fs.unlinkSync(path.join(baseIndexPath, file));
-    //     }
-    // });
-
-    fs.unlinkSync(infoFilePath);
+    fs.rmSync(path.join(basePath), { recursive: true });
 
     return { worked: true };
 });

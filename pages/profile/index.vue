@@ -3,39 +3,40 @@
         <div>Hello {{ userState.user.displayName }}!</div>
 
         <div>
-            <div>Your Docs:</div>
-            <div v-if="alreadyTrainedModelInfo">
-                Name: {{ alreadyTrainedModelInfo.modelName }} <br />
-                Created: {{ alreadyTrainedModelInfo.created }} <br />
-                <button @click="deleteModel">Delete</button>
-            </div>
-            <div v-else>
-                <input type="file" ref="fileUploadRef" :multiple="false" />
-                <!-- Wenn ich hier schon einen namen geben kann will ich das auch richtig nutzen. 
-                Plan: Ein user kann mehrere Modelle haben.
-                Also: 
-                userId/
-                    - modell1
-                        - docs
-                        - index
-                    - modell2
-                        - docs
-                        - index
-
-                Und diese modells kann ich dann auch im chat auswählen
-             -->
-                <input
-                    type="text"
-                    placeholder="Model Name"
-                    v-model="modelName"
-                    class="px-4 py-2 text-black focus:outline-none"
-                />
-                <button
-                    class="bg-white text-black p-2 cursor-pointer"
-                    @click="uploadDocument"
+            <input type="file" ref="fileUploadRef" :multiple="false" />
+            <input
+                type="text"
+                placeholder="Model Name"
+                v-model="modelName"
+                class="px-4 py-2 text-black focus:outline-none"
+            />
+            <button
+                class="bg-white text-black p-2 cursor-pointer"
+                @click="uploadDocument"
+            >
+                Upload document
+            </button>
+        </div>
+        <div>
+            <div>Your Models:</div>
+            <div class="flex gap-2 flex-wrap">
+                <div
+                    v-for="infoItem in trainedModelsInfo"
+                    class="p-4 bg-[#555] text-white flex flex-col"
                 >
-                    Upload document
-                </button>
+                    <span>
+                        Name: <strong>{{ infoItem.modelName }}</strong>
+                    </span>
+                    <span>
+                        Created: <strong>{{ infoItem.created }}</strong>
+                    </span>
+                    <button
+                        @click="deleteModel(infoItem.modelName)"
+                        class="mt-2 px-2 py-2 bg-red-300 text-[#555] hover:bg-red-500 hover:text-white"
+                    >
+                        Delete
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -44,11 +45,7 @@
 <script setup lang="ts">
 import { fileToBase64 } from "~/server/utils/global.utils";
 import { useUserState } from "~/stores/userState";
-
-type TrainedModelInfo = {
-    modelName: string;
-    created: string;
-};
+import { TrainedModelInfo } from "~/types/model";
 
 const userState = useUserState();
 const router = useRouter();
@@ -56,7 +53,7 @@ const router = useRouter();
 const fileUploadRef = ref<HTMLInputElement>();
 const modelName = ref("");
 
-const alreadyTrainedModelInfo = ref<TrainedModelInfo>();
+const trainedModelsInfo = ref<TrainedModelInfo[]>([]);
 
 const uploadDocument = async () => {
     if (!fileUploadRef.value || !userState.user) return;
@@ -78,6 +75,10 @@ const uploadDocument = async () => {
 
     if (error.value || !data.value) return;
 
+    modelName.value = "";
+    fileUploadRef.value.files = null;
+    fileUploadRef.value.value = "";
+
     console.log(data.value);
     checkUserDocs();
 };
@@ -85,27 +86,29 @@ const uploadDocument = async () => {
 const checkUserDocs = async () => {
     if (!userState.user) return;
 
-    const { error, data } = await useFetch<TrainedModelInfo>(
-        "/api/checkTrainedModel",
+    const { error, data } = await useFetch<TrainedModelInfo[]>(
+        "/api/checkTrainedModels",
         {
             method: "get",
             query: { userId: userState.user.uid },
         }
     );
 
-    if (error.value || !data.value)
-        return (alreadyTrainedModelInfo.value = undefined);
+    console.log(data.value);
 
-    alreadyTrainedModelInfo.value = data.value;
+    if (error.value || !data.value) return;
+
+    trainedModelsInfo.value = data.value;
 };
 
-const deleteModel = async () => {
+const deleteModel = async (modelName: string) => {
     if (!userState.user) return;
 
     const { error, data } = await useFetch("/api/deleteTrainedModel", {
         method: "delete",
         body: {
             userId: userState.user.uid,
+            modelName,
         },
     });
 

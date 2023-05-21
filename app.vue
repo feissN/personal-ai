@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-[#333] text-white">
+    <div>
         <NuxtLayout>
             <NuxtPage />
         </NuxtLayout>
@@ -30,3 +30,10 @@ onMounted(() => {
     });
 });
 </script>
+
+<style lang="scss">
+body {
+    background-color: #333;
+    color: white;
+}
+</style>

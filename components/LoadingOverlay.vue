@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="show"
-        class="absolute top-0 left-0 w-full h-screen backdrop-blur-sm backdrop-brightness-50 flex items-center justify-center z-50"
+        class="fixed top-0 left-0 w-full h-screen backdrop-blur-sm backdrop-brightness-50 flex items-center justify-center z-50"
     >
         <div class="spinner"></div>
     </div>

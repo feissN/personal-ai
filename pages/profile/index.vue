@@ -1,8 +1,8 @@
 <template>
-    <div v-if="userState.user">
-        <div>Hello {{ userState.user.displayName }}!</div>
+    <div v-if="userState.user" class="overflow-auto h-full flex flex-col">
+        <div class="text-center text-xl">Hello {{ userState.user.displayName }}!</div>
 
-        <div class="flex my-4 gap-2">
+        <div class="flex my-4 gap-2 flex-col">
             <div>
                 <input
                     class="cursor-pointer block w-full text-sm focus:z-10 focus:border-[#222] focus:ring-[#222] dark:bg-[#222] dark:border-[#444] dark:text-white file:bg-transparent file:border-0 file:bg-[#444] file:mr-4 file:py-3 file:px-4 file:cursor-pointer file:text-white"
@@ -27,9 +27,9 @@
             </button>
         </div>
 
-        <div>
-            <div v-if="appState.trainedModels.length">Your Models:</div>
-            <div class="flex gap-2 flex-wrap" v-auto-animate>
+        <div v-if="appState.trainedModels.length" class="font-bold text-xl mb-2">Your Models:</div>
+        <div class="overflow-auto">
+            <div class="flex gap-2 flex-wrap flex-col md:flex-row" v-auto-animate>
                 <div
                     v-for="infoItem in appState.trainedModels"
                     class="p-4 bg-[#555] text-white flex flex-col"

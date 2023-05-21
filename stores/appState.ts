@@ -79,8 +79,17 @@ export const useAppState = defineStore("appState", {
                     },
                 });
 
-                if (error.value || !data.value)
-                    throw error.value || "Vectorstore could not be created!";
+                if (error.value) {
+                    throw error;
+                }
+
+                if (!data.value) {
+                    throw "Vectorstore could not be created! - Unknown error";
+                }
+
+                if ("error" in data.value) {
+                    throw data.value.error;
+                }
 
                 const { hnswlib, args, docstore } = data.value;
 

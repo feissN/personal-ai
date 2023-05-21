@@ -1,16 +1,10 @@
 <template>
-    <div class="app">
-        <LoadingOverlay :show="appStore.appState === 'loading'" />
-
-        <div class="p-4 h-14 bg-[#222] text-white font-bold">
-            PDF aware chat bot
-        </div>
-        <ChatBot :class="`h-[calc(100vh-56px)]`" />
-    </div>
+    <ChatBot v-if="userState.user" />
+    <Welcome v-else />
 </template>
 
 <script setup lang="ts">
-import { useAppStore } from "~/stores/appState";
+import { useUserState } from "~/stores/userState";
 
-const appStore = useAppStore();
+const userState = useUserState();
 </script>

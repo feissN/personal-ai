@@ -1,11 +1,12 @@
+import { PineconeClient } from "@pinecone-database/pinecone";
 import fs from "fs";
-import { RetrievalQAChain } from "langchain/chains";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { OpenAI } from "langchain/llms/openai";
-import { HNSWLib } from "langchain/vectorstores/hnswlib";
+import { PineconeStore } from "langchain/vectorstores/pinecone";
 import path from "path";
 import { ChatRequest } from "~/types/request";
 import { sleep } from "../utils/global.utils";
+import { makeChain } from "../utils/makeChain";
 
 export default defineEventHandler(async (event) => {
     if (useRuntimeConfig().public.devMode) {
@@ -17,8 +18,6 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const openAiModel = new OpenAI({});
-
         const { question, userId, model, modelName } = await readBody<ChatRequest>(event);
 
         // each user can only have one active model
@@ -43,12 +42,27 @@ export default defineEventHandler(async (event) => {
             fs.writeFileSync(`${activeStorageLocation}/hnswlib.index`, hsnwlibFile, "base64url");
         }
 
-        const vectorStore = await HNSWLib.load(activeStorageLocation, new OpenAIEmbeddings());
+        const client = new PineconeClient();
+        await client.init({
+            apiKey: useRuntimeConfig().pineconeApiKey,
+            environment: useRuntimeConfig().pineconeEnvironment,
+        });
+        const pineconeIndex = client.Index(useRuntimeConfig().pineconeIndexName);
 
-        const chain = RetrievalQAChain.fromLLM(openAiModel, vectorStore.asRetriever());
+        const vectorStore = await PineconeStore.fromExistingIndex(new OpenAIEmbeddings({}), {
+            pineconeIndex,
+            textKey: "text",
+            namespace: "personla-ai"//modelName,
+        });
+
+        const chain = makeChain(vectorStore);
+
+        // OpenAI recommends replacing newlines with spaces for best results
+        const sanitizedQuestion = question.trim().replaceAll("\n", " ");
 
         const res = await chain.call({
-            query: question,
+            question: sanitizedQuestion,
+            chat_history: [],
         });
 
         return { message: res.text };

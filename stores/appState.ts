@@ -84,43 +84,43 @@ export const useAppState = defineStore("appState", {
                 }
 
                 if (!data.value) {
-                    throw "Vectorstore could not be created! - Unknown error";
+                    throw "Vectorstore could not be created! - Empty namespace";
                 }
 
-                if ("error" in data.value) {
-                    throw data.value.error;
-                }
+                const createdNamespace = data.value
 
-                const { hnswlib, args, docstore } = data.value;
+                // const { hnswlib, args, docstore } = data.value;
 
-                const vectorBlob = dataURLtoFile(hnswlib, "hnswlib");
-                const docstoreBlob = dataURLtoFile(docstore, "docstore");
-                const argsBlob = dataURLtoFile(args, "args");
+                // const vectorBlob = dataURLtoFile(hnswlib, "hnswlib");
+                // const docstoreBlob = dataURLtoFile(docstore, "docstore");
+                // const argsBlob = dataURLtoFile(args, "args");
 
-                const vectorRef = firebaseStorage.ref(
-                    storage,
-                    `user/${userState.user.uid}/${modelName}/hnswlib.index`
-                );
-                const docstoreRef = firebaseStorage.ref(
-                    storage,
-                    `user/${userState.user.uid}/${modelName}/docstore.json`
-                );
-                const argsRef = firebaseStorage.ref(
-                    storage,
-                    `user/${userState.user.uid}/${modelName}/args.json`
-                );
+                // const vectorRef = firebaseStorage.ref(
+                //     storage,
+                //     `user/${userState.user.uid}/${modelName}/hnswlib.index`
+                // );
+                // const docstoreRef = firebaseStorage.ref(
+                //     storage,
+                //     `user/${userState.user.uid}/${modelName}/docstore.json`
+                // );
+                // const argsRef = firebaseStorage.ref(
+                //     storage,
+                //     `user/${userState.user.uid}/${modelName}/args.json`
+                // );
 
-                const uploads = [
-                    await firebaseStorage.uploadBytes(vectorRef, vectorBlob),
-                    await firebaseStorage.uploadBytes(docstoreRef, docstoreBlob),
-                    await firebaseStorage.uploadBytes(argsRef, argsBlob),
-                ];
+                // const uploads = [
+                //     await firebaseStorage.uploadBytes(vectorRef, vectorBlob),
+                //     await firebaseStorage.uploadBytes(docstoreRef, docstoreBlob),
+                //     await firebaseStorage.uploadBytes(argsRef, argsBlob),
+                // ];
 
-                await Promise.all(uploads);
+                // await Promise.all(uploads);
 
-                console.log("Uploaded model!");
+                // console.log("Uploaded model!");
 
-                await this.checkUserDocs();
+                // await this.checkUserDocs();
+
+                console.log(data.value)
 
                 this.loading = false;
             } catch (err) {

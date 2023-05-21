@@ -25,6 +25,7 @@
         "@formkit/auto-animate": "^1.0.0-beta.6",
         "@fortawesome/free-solid-svg-icons": "^6.4.0",
         "@fortawesome/vue-fontawesome": "^3.0.3",
+        "@pinecone-database/pinecone": "^0.1.6",
         "@pinia/nuxt": "^0.4.11",
         "firebase": "^9.22.0",
         "formidable": "^2.1.1",

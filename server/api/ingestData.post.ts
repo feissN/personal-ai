@@ -1,26 +1,15 @@
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import fs from "fs";
-import { HNSWLib } from "langchain/vectorstores/hnswlib";
+import { PineconeClient } from "@pinecone-database/pinecone";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import path from "path";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { PineconeStore } from "langchain/vectorstores/pinecone";
+import { CustomPDFLoader } from "../utils/customPDFLoader";
 import { dataURLtoFile } from "../utils/global.utils";
 
 export default defineEventHandler(async (event) => {
     if (useRuntimeConfig().public.devMode) {
         await sleep(1000);
-        const _ = await readBody(event);
-        const devStorageLocation = `./server/DEV/USERID/MODELNAME/index`;
-        const vectorFile = fs.readFileSync(`${devStorageLocation}/hnswlib.index`, "base64");
-        const argsFile = fs.readFileSync(`${devStorageLocation}/args.json`, "base64");
-        const docstoreFile = fs.readFileSync(`${devStorageLocation}/docstore.json`, "base64");
 
-        console.log("Ingest complete! - DEV");
-
-        return {
-            hnswlib: `data:application/index;base64,${vectorFile}`,
-            args: `data:application/json;base64,${argsFile}`,
-            docstore: `data:application/json;base64,${docstoreFile}`,
-        };
+        return "some/namespace";
     }
 
     const body = await readBody<{
@@ -43,27 +32,23 @@ export default defineEventHandler(async (event) => {
         });
         const docs = await textSplitter.splitDocuments(rawDocs);
 
-        const tmpStorageLocation = `./server/tmpUserModels/${body.userId}/${body.modelName}/index`;
-        const vectorStore = await HNSWLib.fromDocuments(docs, new OpenAIEmbeddings());
-        await vectorStore.save(tmpStorageLocation);
-
-        const vectorFile = fs.readFileSync(`${tmpStorageLocation}/hnswlib.index`, "base64");
-        const argsFile = fs.readFileSync(`${tmpStorageLocation}/args.json`, "base64");
-        const docstoreFile = fs.readFileSync(`${tmpStorageLocation}/docstore.json`, "base64");
-
-        fs.rmSync(path.join(`./server/tmpUserModels/${body.userId}/${body.modelName}`), {
-            recursive: true,
+        const client = new PineconeClient();
+        await client.init({
+            apiKey: useRuntimeConfig().pineconeApiKey,
+            environment: useRuntimeConfig().pineconeEnvironment,
         });
+        const pineconeIndex = client.Index(useRuntimeConfig().pineconeIndexName);
 
+        const embeddings = new OpenAIEmbeddings();
+        const store = await PineconeStore.fromDocuments(docs, embeddings, {
+            pineconeIndex,
+            namespace: `${body.userId}/${body.modelName}`,
+            textKey: "text",
+        });
         console.log("Ingest complete!");
-
-        return {
-            hnswlib: `data:application/index;base64,${vectorFile}`,
-            args: `data:application/json;base64,${argsFile}`,
-            docstore: `data:application/json;base64,${docstoreFile}`,
-        };
+        return store.namespace;
     } catch (error) {
         console.error("Error", error);
-        return { error };
+        throw error;
     }
 });

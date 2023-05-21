@@ -1,14 +1,14 @@
 <template>
     <div
-        v-if="appState.trainedModels.length"
+        v-if="appState.trainedModels.length || true"
         class="text-white flex flex-col gap-2 relative h-full"
     >
-        <ChatModelSelect
+        <!-- <ChatModelSelect
             :models="appState.trainedModels"
             :selected-model="appState.activeModel"
             @select-model="selectModel"
             class="w-full"
-        />
+        /> -->
         <ChatHistory class="h-full" :chat-history="chatHistory" />
         <ChatInput @send="send" />
     </div>
@@ -94,7 +94,7 @@ const send = async (message: string) => {
     const listRef = firebaseStorage.ref(storage, modelRefPath);
     const list = await firebaseStorage.listAll(listRef);
 
-    if (!list.items.length) throw "Model not found!";
+    // if (!list.items.length) throw "Model not found!";
 
     const model: TrainedModel = {
         args: "",
@@ -102,19 +102,19 @@ const send = async (message: string) => {
         hnswlib: "",
     };
 
-    for (const itemRef of list.items) {
-        const blob = await firebaseStorage.getBlob(itemRef);
-        const raw = await fileToBase64(blob);
+    // for (const itemRef of list.items) {
+    //     const blob = await firebaseStorage.getBlob(itemRef);
+    //     const raw = await fileToBase64(blob);
 
-        const itemName = itemRef.name.split(".")[0] as keyof typeof model;
-        model[itemName] = raw;
-    }
+    //     const itemName = itemRef.name.split(".")[0] as keyof typeof model;
+    //     model[itemName] = raw;
+    // }
 
     const requestBody: ChatRequest = {
         question: message,
         userId: userState.user.uid,
         model,
-        modelName: appState.activeModel
+        modelName: "test"//appState.activeModel
     };
 
     const res = await useFetch("/api/openAiRequest", {

@@ -63,6 +63,6 @@ export default defineEventHandler(async (event) => {
         };
     } catch (error) {
         console.error("Error", error);
-        return null;
+        throw error;
     }
 });

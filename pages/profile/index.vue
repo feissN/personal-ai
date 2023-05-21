@@ -2,18 +2,31 @@
     <div v-if="userState.user">
         <div>Hello {{ userState.user.displayName }}!</div>
 
-        <div>
-            <input type="file" ref="fileUploadRef" :multiple="false" accept="application/pdf" />
+        <div class="flex my-4 gap-2">
+            <div>
+                <input
+                    class="cursor-pointer block w-full text-sm focus:z-10 focus:border-[#222] focus:ring-[#222] dark:bg-[#222] dark:border-[#444] dark:text-white file:bg-transparent file:border-0 file:bg-[#444] file:mr-4 file:py-3 file:px-4 file:cursor-pointer file:text-white"
+                    type="file"
+                    :multiple="false"
+                    accept="application/pdf"
+                    ref="fileUploadRef"
+                />
+            </div>
+
             <input
                 type="text"
                 placeholder="Model Name"
                 v-model="modelName"
-                class="px-4 py-2 text-black focus:outline-none"
+                class="px-4 py-2 text-white focus:outline-none bg-[#222]"
             />
-            <button class="bg-white text-black p-2 cursor-pointer" @click="uploadDocument">
+            <button
+                class="bg-[#eee] text-black font-bold p-2 cursor-pointer"
+                @click="uploadDocument"
+            >
                 Upload document
             </button>
         </div>
+
         <div>
             <div v-if="appState.trainedModels.length">Your Models:</div>
             <div class="flex gap-2 flex-wrap" v-auto-animate>

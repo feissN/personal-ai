@@ -16,14 +16,17 @@ import { useAppState } from "./stores/appState";
 const userState = useUserState();
 const appState = useAppState();
 
-onBeforeMount(() => {
+onMounted(() => {
     onAuthStateChanged(auth, (user) => {
         userState.user = user;
         userState.loaded = true;
 
         if (user) {
             appState.checkUserDocs();
+            return;
         }
+
+        appState.loading = false;
     });
 });
 </script>

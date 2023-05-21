@@ -3,6 +3,7 @@ import fs from "fs";
 import { HNSWLib } from "langchain/vectorstores/hnswlib";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import path from "path";
+import { dataURLtoFile } from "../utils/global.utils";
 
 export default defineEventHandler(async (event) => {
     if (useRuntimeConfig().public.devMode) {

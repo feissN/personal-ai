@@ -52,6 +52,7 @@ export const useAppState = defineStore("appState", {
 
                 if (!this.trainedModels.length) {
                     this.activeModel = "";
+                    return;
                 }
 
                 this.activeModel = this.trainedModels[0].modelName;

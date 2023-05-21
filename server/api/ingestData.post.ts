@@ -7,19 +7,11 @@ import path from "path";
 export default defineEventHandler(async (event) => {
     if (useRuntimeConfig().public.devMode) {
         await sleep(1000);
+        const _ = await readBody(event);
         const devStorageLocation = `./server/DEV/USERID/MODELNAME/index`;
-        const vectorFile = fs.readFileSync(
-            `${devStorageLocation}/hnswlib.index`,
-            "base64"
-        );
-        const argsFile = fs.readFileSync(
-            `${devStorageLocation}/args.json`,
-            "base64"
-        );
-        const docstoreFile = fs.readFileSync(
-            `${devStorageLocation}/docstore.json`,
-            "base64"
-        );
+        const vectorFile = fs.readFileSync(`${devStorageLocation}/hnswlib.index`, "base64");
+        const argsFile = fs.readFileSync(`${devStorageLocation}/args.json`, "base64");
+        const docstoreFile = fs.readFileSync(`${devStorageLocation}/docstore.json`, "base64");
 
         console.log("Ingest complete! - DEV");
 
@@ -51,29 +43,16 @@ export default defineEventHandler(async (event) => {
         const docs = await textSplitter.splitDocuments(rawDocs);
 
         const tmpStorageLocation = `./server/tmpUserModels/${body.userId}/${body.modelName}/index`;
-        const vectorStore = await HNSWLib.fromDocuments(
-            docs,
-            new OpenAIEmbeddings()
-        );
+        const vectorStore = await HNSWLib.fromDocuments(docs, new OpenAIEmbeddings());
         await vectorStore.save(tmpStorageLocation);
 
-        const vectorFile = fs.readFileSync(
-            `${tmpStorageLocation}/hnswlib.index`,
-            "base64"
-        );
-        const argsFile = fs.readFileSync(
-            `${tmpStorageLocation}/args.json`,
-            "utf-8"
-        );
-        const docstoreFile = fs.readFileSync(
-            `${tmpStorageLocation}/docstore.json`,
-            "utf-8"
-        );
+        const vectorFile = fs.readFileSync(`${tmpStorageLocation}/hnswlib.index`, "base64");
+        const argsFile = fs.readFileSync(`${tmpStorageLocation}/args.json`, "utf-8");
+        const docstoreFile = fs.readFileSync(`${tmpStorageLocation}/docstore.json`, "utf-8");
 
-        fs.rmSync(
-            path.join(`./server/tmpUserModels/${body.userId}/${body.modelName}`),
-            { recursive: true }
-        );
+        fs.rmSync(path.join(`./server/tmpUserModels/${body.userId}/${body.modelName}`), {
+            recursive: true,
+        });
 
         console.log("Ingest complete!");
 

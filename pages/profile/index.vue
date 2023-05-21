@@ -3,31 +3,24 @@
         <div>Hello {{ userState.user.displayName }}!</div>
 
         <div>
-            <input
-                type="file"
-                ref="fileUploadRef"
-                :multiple="false"
-                accept="application/pdf"
-            />
+            <input type="file" ref="fileUploadRef" :multiple="false" accept="application/pdf" />
             <input
                 type="text"
                 placeholder="Model Name"
                 v-model="modelName"
                 class="px-4 py-2 text-black focus:outline-none"
             />
-            <button
-                class="bg-white text-black p-2 cursor-pointer"
-                @click="uploadDocument"
-            >
+            <button class="bg-white text-black p-2 cursor-pointer" @click="uploadDocument">
                 Upload document
             </button>
         </div>
         <div>
             <div v-if="appState.trainedModels.length">Your Models:</div>
-            <div class="flex gap-2 flex-wrap">
+            <div class="flex gap-2 flex-wrap" v-auto-animate>
                 <div
                     v-for="infoItem in appState.trainedModels"
                     class="p-4 bg-[#555] text-white flex flex-col"
+                    :key="infoItem.modelName"
                 >
                     <span>
                         Name: <strong>{{ infoItem.modelName }}</strong>
@@ -67,7 +60,11 @@ const uploadDocument = async () => {
     if (!files || !files.length) return;
 
     const file = files[0];
-    appState.uploadDocument(file, modelName.value);
+    await appState.uploadDocument(file, modelName.value);
+
+    modelName.value = "";
+    fileUploadRef.value.files = null;
+    fileUploadRef.value.value = "";
 };
 
 const deleteModel = async (modelName: string) => {

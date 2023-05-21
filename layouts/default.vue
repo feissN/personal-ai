@@ -1,6 +1,6 @@
 <template>
     <div class="app">
-        <LoadingOverlay :show="appStore.appState === 'loading' || appStore.authenticatingRoute" />
+        <LoadingOverlay :show="appState.loading" />
 
         <NavBar />
 
@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAppStore } from "~/stores/appState";
+import { useAppState } from "~/stores/appState";
 
-const appStore = useAppStore();
+const appState = useAppState();
 </script>

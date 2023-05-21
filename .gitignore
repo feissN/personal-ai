@@ -10,3 +10,5 @@ dist
 docs
 docs_vector_store.index
 userDocs
+tmpUserModels
+activeUserModels

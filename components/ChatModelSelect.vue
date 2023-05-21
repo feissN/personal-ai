@@ -3,6 +3,7 @@
         <select
             class="bg-[#222] text-white text-sm block w-full p-2.5"
             @change="selectModel"
+            :value="selectedModel"
         >
             <option v-for="model in models" :value="model.modelName">
                 {{ model.modelName }}
@@ -16,6 +17,7 @@ import { TrainedModelInfo } from "~/types/model";
 
 const props = defineProps<{
     models: TrainedModelInfo[];
+    selectedModel: string;
 }>();
 
 const emit = defineEmits<{

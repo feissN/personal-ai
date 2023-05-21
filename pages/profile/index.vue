@@ -3,7 +3,12 @@
         <div>Hello {{ userState.user.displayName }}!</div>
 
         <div>
-            <input type="file" ref="fileUploadRef" :multiple="false" />
+            <input
+                type="file"
+                ref="fileUploadRef"
+                :multiple="false"
+                accept="application/pdf"
+            />
             <input
                 type="text"
                 placeholder="Model Name"
@@ -18,10 +23,10 @@
             </button>
         </div>
         <div>
-            <div>Your Models:</div>
+            <div v-if="appState.trainedModels.length">Your Models:</div>
             <div class="flex gap-2 flex-wrap">
                 <div
-                    v-for="infoItem in trainedModelsInfo"
+                    v-for="infoItem in appState.trainedModels"
                     class="p-4 bg-[#555] text-white flex flex-col"
                 >
                     <span>
@@ -43,17 +48,16 @@
 </template>
 
 <script setup lang="ts">
-import { fileToBase64 } from "~/server/utils/global.utils";
+import { useAppState } from "~/stores/appState";
 import { useUserState } from "~/stores/userState";
-import { TrainedModelInfo } from "~/types/model";
 
 const userState = useUserState();
+const appState = useAppState();
+
 const router = useRouter();
 
 const fileUploadRef = ref<HTMLInputElement>();
 const modelName = ref("");
-
-const trainedModelsInfo = ref<TrainedModelInfo[]>([]);
 
 const uploadDocument = async () => {
     if (!fileUploadRef.value || !userState.user) return;
@@ -63,59 +67,11 @@ const uploadDocument = async () => {
     if (!files || !files.length) return;
 
     const file = files[0];
-
-    const { error, data } = await useFetch("/api/saveNewDocument", {
-        method: "post",
-        body: {
-            file: await fileToBase64(file),
-            userId: userState.user.uid,
-            modelName: modelName.value,
-        },
-    });
-
-    if (error.value || !data.value) return;
-
-    modelName.value = "";
-    fileUploadRef.value.files = null;
-    fileUploadRef.value.value = "";
-
-    console.log(data.value);
-    checkUserDocs();
-};
-
-const checkUserDocs = async () => {
-    if (!userState.user) return;
-
-    const { error, data } = await useFetch<TrainedModelInfo[]>(
-        "/api/checkTrainedModels",
-        {
-            method: "get",
-            query: { userId: userState.user.uid },
-        }
-    );
-
-    console.log(data.value);
-
-    if (error.value || !data.value) return;
-
-    trainedModelsInfo.value = data.value;
+    appState.uploadDocument(file, modelName.value);
 };
 
 const deleteModel = async (modelName: string) => {
-    if (!userState.user) return;
-
-    const { error, data } = await useFetch("/api/deleteTrainedModel", {
-        method: "delete",
-        body: {
-            userId: userState.user.uid,
-            modelName,
-        },
-    });
-
-    if (error.value || !data.value) return;
-
-    console.log(data.value);
-    checkUserDocs();
+    appState.deleteModel(modelName);
 };
 
 watch(userState, () => {
@@ -123,7 +79,6 @@ watch(userState, () => {
         if (!userState.user) {
             return router.push("/");
         }
-        checkUserDocs();
     }
 });
 
@@ -131,9 +86,5 @@ onMounted(() => {
     if (userState.loaded && !userState.user) {
         return router.push("/");
     }
-
-    setTimeout(() => {
-        checkUserDocs();
-    });
 });
 </script>

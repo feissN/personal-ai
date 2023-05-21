@@ -11,13 +11,19 @@ import { onAuthStateChanged } from "firebase/auth";
 import "./firebase";
 import { auth } from "./firebase";
 import { useUserState } from "./stores/userState";
+import { useAppState } from "./stores/appState";
 
 const userState = useUserState();
+const appState = useAppState();
 
 onBeforeMount(() => {
     onAuthStateChanged(auth, (user) => {
         userState.user = user;
         userState.loaded = true;
+
+        if (user) {
+            appState.checkUserDocs();
+        }
     });
 });
 </script>

@@ -1,8 +1,9 @@
 import fs from "fs";
-import { OpenAI } from "langchain/llms/openai";
 import { RetrievalQAChain } from "langchain/chains";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { OpenAI } from "langchain/llms/openai";
 import { HNSWLib } from "langchain/vectorstores/hnswlib";
+import path from "path";
 import { ChatRequest } from "~/types/request";
 import { sleep } from "../utils/global.utils";
 
@@ -10,35 +11,41 @@ export default defineEventHandler(async (event) => {
     if (useRuntimeConfig().public.devMode) {
         await sleep(1000);
 
-        return { message: "DEBUG MESSAGE!" };
+        const { question, userId, model } = await readBody<ChatRequest>(event);
+
+        return { message: `DEVELOP - ${question}` };
     }
 
     try {
-        const model = new OpenAI({});
+        const openAiModel = new OpenAI({});
 
-        const { question, userId, modelName } = await readBody<ChatRequest>(
-            event
-        );
+        const { question, userId, model, modelName } = await readBody<ChatRequest>(event);
 
-        const { baseDocPath, baseIndexPath, baseInfoPath } = getPathsFrom(
-            userId,
-            modelName
-        );
+        // each user can only have one active model
+        const baseActiveStorageLocation = `./server/activeUserModels/${userId}`;
+        const activeStorageLocation = `${baseActiveStorageLocation}/${modelName}`;
 
-        let vectorStore;
-        if (fs.existsSync(baseIndexPath)) {
-            vectorStore = await HNSWLib.load(
-                baseIndexPath,
-                new OpenAIEmbeddings()
-            );
-        } else {
-            throw "Vector store does not exist. Try calling api/ingest first";
+        if (fs.existsSync(baseActiveStorageLocation) && !fs.existsSync(activeStorageLocation)) {
+            console.log("Remove existing");
+            fs.rmSync(path.join(baseActiveStorageLocation), { recursive: true });
         }
 
-        const chain = RetrievalQAChain.fromLLM(
-            model,
-            vectorStore.asRetriever()
-        );
+        if (!fs.existsSync(activeStorageLocation)) {
+            console.log("Write");
+            fs.mkdirSync(activeStorageLocation, { recursive: true });
+
+            const argsFile = model.args.split(";base64,").pop()!;
+            const docstoreFile = model.docstore.split(";base64,").pop()!;
+            const hsnwlibFile = model.hnswlib.split(";base64,").pop()!;
+
+            fs.writeFileSync(`${activeStorageLocation}/args.json`, argsFile, "base64url");
+            fs.writeFileSync(`${activeStorageLocation}/docstore.json`, docstoreFile, "base64url");
+            fs.writeFileSync(`${activeStorageLocation}/hnswlib.index`, hsnwlibFile, "base64url");
+        }
+
+        const vectorStore = await HNSWLib.load(activeStorageLocation, new OpenAIEmbeddings());
+
+        const chain = RetrievalQAChain.fromLLM(openAiModel, vectorStore.asRetriever());
 
         const res = await chain.call({
             query: question,
@@ -47,9 +54,8 @@ export default defineEventHandler(async (event) => {
         return { message: res.text };
     } catch (error) {
         // @ts-ignore unknown type
-        console.error(error.response);
+        console.error(error);
 
-        // @ts-ignore unknown type
-        throw error.response;
+        return;
     }
 });

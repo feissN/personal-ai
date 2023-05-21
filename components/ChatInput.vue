@@ -38,10 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import { useAppStore } from "~/stores/appState";
+import { useAppState } from "~/stores/appState";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-const appStore = useAppStore();
+const appStore = useAppState();
 
 const currentMessage = ref("");
 

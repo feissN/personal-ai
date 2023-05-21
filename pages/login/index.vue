@@ -1,5 +1,6 @@
 <template>
     <div class="flex justify-center items-center min-h-[50vh]">
+        <!-- TODO: More Logins -->
         <button
             class="px-4 py-2 bg-white text-black text-2xl"
             @click="googleLogin"

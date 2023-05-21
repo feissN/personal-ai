@@ -7,13 +7,10 @@ export default defineNuxtConfig({
             autoprefixer: {},
         },
     },
-    css: [
-        "~/assets/css/main.scss",
-        "@fortawesome/fontawesome-svg-core/styles.css",
-    ],
+    css: ["~/assets/css/main.scss", "@fortawesome/fontawesome-svg-core/styles.css"],
     runtimeConfig: {
         public: {
-            devMode: true,
+            devMode: false,
         },
     },
 });

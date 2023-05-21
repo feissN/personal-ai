@@ -47,8 +47,8 @@ export default defineEventHandler(async (event) => {
         await vectorStore.save(tmpStorageLocation);
 
         const vectorFile = fs.readFileSync(`${tmpStorageLocation}/hnswlib.index`, "base64");
-        const argsFile = fs.readFileSync(`${tmpStorageLocation}/args.json`, "utf-8");
-        const docstoreFile = fs.readFileSync(`${tmpStorageLocation}/docstore.json`, "utf-8");
+        const argsFile = fs.readFileSync(`${tmpStorageLocation}/args.json`, "base64");
+        const docstoreFile = fs.readFileSync(`${tmpStorageLocation}/docstore.json`, "base64");
 
         fs.rmSync(path.join(`./server/tmpUserModels/${body.userId}/${body.modelName}`), {
             recursive: true,

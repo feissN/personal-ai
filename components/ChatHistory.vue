@@ -1,19 +1,11 @@
 <template>
-    <div
-        class="history w-full overflow-auto flex flex-col gap-4"
-        v-auto-animate
-    >
-        <ChatItem
-            v-for="chatItem in chatHistory"
-            :chat-item="chatItem"
-        ></ChatItem>
+    <div class="history w-full overflow-auto flex flex-col gap-4" v-auto-animate>
+        <ChatItem v-for="chatItem in appState.chatHistory" :chat-item="chatItem"></ChatItem>
     </div>
 </template>
 
 <script setup lang="ts">
-import type { ChatItem } from "~/types/chatItem";
+import { useAppState } from "~/stores/appState";
 
-const props = defineProps<{
-    chatHistory: ChatItem[];
-}>();
+const appState = useAppState();
 </script>

@@ -9,7 +9,7 @@
             @select-model="selectModel"
             class="w-full"
         />
-        <ChatHistory class="h-full" :chat-history="chatHistory" />
+        <ChatHistory class="h-full" />
         <ChatInput @send="send" />
     </div>
     <div v-else class="flex flex-col gap-2 h-full items-center">
@@ -32,17 +32,6 @@ import { useUserState } from "~/stores/userState";
 import type { ChatItem } from "~/types/chatItem";
 import { ChatRequest } from "~/types/request";
 
-const chatHistory = ref<ChatItem[]>([
-    {
-        fromHuman: false,
-        index: 0,
-        state: "finished",
-        text: "Wie kann ich dir helfen?",
-        noBuild: true,
-    },
-]);
-const historyForBot = ref<[string, string][]>([]);
-
 const router = useRouter();
 const userState = useUserState();
 const appState = useAppState();
@@ -50,17 +39,16 @@ const appState = useAppState();
 const selectModel = (modelName: string) => {
     appState.activeModel = modelName;
 
-    // TODO: Save chat histories in firebase to access them later
-    chatHistory.value = [
+    appState.chatHistory = [
         {
             fromHuman: false,
             index: 0,
             state: "finished",
-            text: "Wie kann ich dir helfen?",
+            text: "Hello! How can I assist you?",
             noBuild: true,
         },
     ];
-    historyForBot.value = [];
+    appState.botHistory = [];
 };
 
 const send = async (message: string) => {
@@ -71,20 +59,20 @@ const send = async (message: string) => {
 
     appState.botState = "thinking";
 
-    chatHistory.value.push({
+    appState.chatHistory.push({
         text: message,
         fromHuman: true,
-        index: chatHistory.value.length,
+        index: appState.chatHistory.length,
         state: "finished",
         noBuild: true,
     });
 
     await sleep(250);
 
-    chatHistory.value.push({
+    appState.chatHistory.push({
         text: "",
         fromHuman: false,
-        index: chatHistory.value.length,
+        index: appState.chatHistory.length,
         state: "typing",
     });
 
@@ -94,7 +82,7 @@ const send = async (message: string) => {
             question: message,
             userId: userState.user.uid,
             modelName: appState.activeModel,
-            history: JSON.parse(JSON.stringify(historyForBot.value)),
+            history: JSON.parse(JSON.stringify(appState.botHistory)),
         } as ChatRequest,
         retry: false,
     });
@@ -105,7 +93,7 @@ const send = async (message: string) => {
 const handleAIResponse = (res: _AsyncData<any, any>, message: string) => {
     appState.botState = "thinking";
 
-    const lastItem = chatHistory.value.at(-1);
+    const lastItem = appState.chatHistory.at(-1);
     if (!lastItem) {
         const newChatItem: ChatItem = {
             fromHuman: false,
@@ -117,7 +105,7 @@ const handleAIResponse = (res: _AsyncData<any, any>, message: string) => {
         appState.botState = "broken";
 
         if (!res.data || !res.data.value || !res.data.value.message) {
-            chatHistory.value.push(newChatItem);
+            appState.chatHistory.push(newChatItem);
             appState.botState = "broken";
 
             return;
@@ -125,9 +113,9 @@ const handleAIResponse = (res: _AsyncData<any, any>, message: string) => {
 
         newChatItem.text = res.data.value.message.trim();
         newChatItem.state = "finished";
-        chatHistory.value.push(newChatItem);
+        appState.chatHistory.push(newChatItem);
         appState.botState = "ready";
-        historyForBot.value?.push([message, newChatItem.text]);
+        appState.botHistory?.push([message, newChatItem.text]);
 
         return;
     }
@@ -143,6 +131,6 @@ const handleAIResponse = (res: _AsyncData<any, any>, message: string) => {
     lastItem.text = res.data.value.message.trim();
     lastItem.state = "finished";
     appState.botState = "ready";
-    historyForBot.value?.push([message, lastItem.text]);
+    appState.botHistory?.push([message, lastItem.text]);
 };
 </script>

@@ -2,12 +2,23 @@ import { defineStore } from "pinia";
 import { fileToBase64 } from "~/server/utils/global.utils";
 import { TrainedModelInfo } from "~/types/model";
 import { useUserState } from "./userState";
+import { ChatItem } from "~/types/chatItem";
 
 type AppState = {
     botState: "ready" | "loading" | "thinking" | "broken";
     loading: boolean;
     trainedModels: TrainedModelInfo[];
     activeModel: string;
+    chatHistory: ChatItem[];
+    botHistory: [string, string][];
+};
+
+const initialChatHistory = {
+    fromHuman: false,
+    index: 0,
+    state: "finished",
+    text: "Hello! How can I assist you?",
+    noBuild: true,
 };
 
 export const useAppState = defineStore("appState", {
@@ -17,6 +28,8 @@ export const useAppState = defineStore("appState", {
             loading: true,
             trainedModels: [],
             activeModel: "",
+            chatHistory: [initialChatHistory],
+            botHistory: [],
         } as AppState),
 
     actions: {

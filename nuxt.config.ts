@@ -14,6 +14,7 @@ export default defineNuxtConfig({
         pineconeEnvironment: process.env.PINECONE_ENVIRONMENT,
         public: {
             devMode: false,
+            locked: true,
         },
     },
 });

@@ -4,7 +4,8 @@
 
         <NavBar />
 
-        <div class="content h-[calc(100vh-56px)] p-4">
+        <Locked v-if="useRuntimeConfig().public.locked" />
+        <div v-else class="content h-[calc(100vh-56px)] p-4">
             <slot />
         </div>
     </div>

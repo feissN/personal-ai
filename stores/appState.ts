@@ -1,9 +1,7 @@
 import { defineStore } from "pinia";
+import { fileToBase64 } from "~/server/utils/global.utils";
 import { TrainedModelInfo } from "~/types/model";
-import * as firebaseStorage from "firebase/storage";
-import { storage } from "~/firebase";
 import { useUserState } from "./userState";
-import { fileToBase64, dataURLtoFile } from "~/server/utils/global.utils";
 
 type AppState = {
     botState: "ready" | "loading" | "thinking" | "broken";
@@ -29,22 +27,17 @@ export const useAppState = defineStore("appState", {
             this.loading = true;
 
             try {
-                const modelsInfo: TrainedModelInfo[] = [];
+                const res = await useFetch("/api/checkUserModels", {
+                    query: { userId: userState.user.uid },
+                });
 
-                const listRef = firebaseStorage.ref(storage, `user/${userState.user.uid}`);
-                const list = await firebaseStorage.listAll(listRef);
-                for (const modelRef of list.prefixes) {
-                    const { items } = await firebaseStorage.listAll(modelRef);
-
-                    const metadata = await firebaseStorage.getMetadata(items[0]);
-
-                    modelsInfo.push({
-                        modelName: modelRef.name,
-                        created: new Date(metadata.timeCreated).toLocaleString(),
-                    });
+                if (res.error.value || !res.data.value) {
+                    this.trainedModels = [];
+                    this.activeModel = "";
+                    throw new Error(res.error.value?.message || "Unable to get user models");
                 }
 
-                this.trainedModels = modelsInfo;
+                this.trainedModels = res.data.value;
                 this.loading = false;
                 if (this.trainedModels.find((model) => model.modelName === this.activeModel)) {
                     return;
@@ -87,41 +80,8 @@ export const useAppState = defineStore("appState", {
                     throw "Vectorstore could not be created! - Empty namespace";
                 }
 
-                const createdNamespace = data.value
-
-                // const { hnswlib, args, docstore } = data.value;
-
-                // const vectorBlob = dataURLtoFile(hnswlib, "hnswlib");
-                // const docstoreBlob = dataURLtoFile(docstore, "docstore");
-                // const argsBlob = dataURLtoFile(args, "args");
-
-                // const vectorRef = firebaseStorage.ref(
-                //     storage,
-                //     `user/${userState.user.uid}/${modelName}/hnswlib.index`
-                // );
-                // const docstoreRef = firebaseStorage.ref(
-                //     storage,
-                //     `user/${userState.user.uid}/${modelName}/docstore.json`
-                // );
-                // const argsRef = firebaseStorage.ref(
-                //     storage,
-                //     `user/${userState.user.uid}/${modelName}/args.json`
-                // );
-
-                // const uploads = [
-                //     await firebaseStorage.uploadBytes(vectorRef, vectorBlob),
-                //     await firebaseStorage.uploadBytes(docstoreRef, docstoreBlob),
-                //     await firebaseStorage.uploadBytes(argsRef, argsBlob),
-                // ];
-
-                // await Promise.all(uploads);
-
-                // console.log("Uploaded model!");
-
-                // await this.checkUserDocs();
-
-                console.log(data.value)
-
+                console.log(data.value);
+                await this.checkUserDocs();
                 this.loading = false;
             } catch (err) {
                 console.error(err);
@@ -136,26 +96,21 @@ export const useAppState = defineStore("appState", {
             this.loading = true;
 
             try {
-                const argsDeleteRef = firebaseStorage.ref(
-                    storage,
-                    `user/${userState.user.uid}/${modelName}/args.json`
-                );
-                const docstoreDeleteRef = firebaseStorage.ref(
-                    storage,
-                    `user/${userState.user.uid}/${modelName}/docstore.json`
-                );
-                const vectorDeleteRef = firebaseStorage.ref(
-                    storage,
-                    `user/${userState.user.uid}/${modelName}/hnswlib.index`
-                );
+                const { error, data } = await useFetch("/api/deleteUserModel", {
+                    method: "POST",
+                    body: {
+                        userId: userState.user.uid,
+                        modelName,
+                    },
+                });
 
-                const deletes = [
-                    await firebaseStorage.deleteObject(argsDeleteRef),
-                    await firebaseStorage.deleteObject(docstoreDeleteRef),
-                    await firebaseStorage.deleteObject(vectorDeleteRef),
-                ];
+                if (error.value || !data.value) {
+                    this.trainedModels = [];
+                    this.activeModel = "";
+                    throw new Error(error.value?.message || "Unable to get user models");
+                }
 
-                await Promise.all(deletes);
+                console.log(data.value);
 
                 console.log("deleted model!");
                 await this.checkUserDocs();

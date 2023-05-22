@@ -4,6 +4,6 @@ import { TrainedModel } from "./model";
 export type ChatRequest = {
     question: string;
     userId: string;
-    model: TrainedModel;
     modelName: string;
+    history: [string, string][];
 };

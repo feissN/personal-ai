@@ -1,18 +1,18 @@
-export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const dataURLtoFile = (dataURL: string, filename: string) => {
-    const arr = dataURL.split(',')
-    const mime = arr[0].match(/:(.*?);/)![1]
-    const bstr = atob(arr[1])
-    let n = bstr.length
-    const u8arr = new Uint8Array(n)
+    const arr = dataURL.split(",");
+    const mime = arr[0].match(/:(.*?);/)![1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
 
     while (n--) {
         u8arr[n] = bstr.charCodeAt(n);
     }
 
     return new File([u8arr], `${filename}.${mime.split("/")[1]}`, { type: mime });
-}
+};
 
 export const fileToBase64 = (source: Blob) => {
     return new Promise<string>((resolve, reject) => {
@@ -39,7 +39,7 @@ export const fileToBinary = (source: Blob) => {
 };
 
 export const base64toBlob = (base64Data: string, contentType: string) => {
-    contentType = contentType || '';
+    contentType = contentType || "";
     var sliceSize = 1024;
     var byteCharacters = atob(base64Data);
     var bytesLength = byteCharacters.length;
@@ -57,4 +57,14 @@ export const base64toBlob = (base64Data: string, contentType: string) => {
         byteArrays[sliceIndex] = new Uint8Array(bytes);
     }
     return new Blob(byteArrays, { type: contentType });
-}
+};
+
+export const chunkArrayIntoPairs = <T>(array: T[]): T[][] => {
+    const result: T[][] = [];
+
+    for (let i = 0; i < array.length; i += 2) {
+        result.push(array.slice(i, i + 2));
+    }
+
+    return result;
+};

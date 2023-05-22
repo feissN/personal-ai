@@ -39,7 +39,7 @@
                         Name: <strong>{{ infoItem.modelName }}</strong>
                     </span>
                     <span>
-                        Created: <strong>{{ infoItem.created }}</strong>
+                        Vectors: <strong>{{ infoItem.vectorCount }}</strong>
                     </span>
                     <button
                         @click="deleteModel(infoItem.modelName)"

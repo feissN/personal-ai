@@ -26,7 +26,6 @@
 
 <script setup lang="ts">
 import { _AsyncData } from "nuxt/dist/app/composables/asyncData";
-import { json } from "stream/consumers";
 import { sleep } from "~/server/utils/global.utils";
 import { useAppState } from "~/stores/appState";
 import { useUserState } from "~/stores/userState";
@@ -51,6 +50,7 @@ const appState = useAppState();
 const selectModel = (modelName: string) => {
     appState.activeModel = modelName;
 
+    // TODO: Save chat histories in firebase to access them later
     chatHistory.value = [
         {
             fromHuman: false,
@@ -60,6 +60,7 @@ const selectModel = (modelName: string) => {
             noBuild: true,
         },
     ];
+    historyForBot.value = [];
 };
 
 const send = async (message: string) => {

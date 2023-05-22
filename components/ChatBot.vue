@@ -50,7 +50,6 @@ const send = async (message: string) => {
         fromHuman: true,
         index: appState.activeChatHistory.length,
         state: "finished",
-        noBuild: true,
     });
 
     await sleep(250);

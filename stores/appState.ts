@@ -18,7 +18,6 @@ const initialChatHistory: ChatItem = {
     index: 0,
     state: "finished",
     text: "Hello! How can I assist you?",
-    noBuild: true,
 };
 
 export const useAppState = defineStore("appState", {

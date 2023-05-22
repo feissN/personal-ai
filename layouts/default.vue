@@ -4,7 +4,7 @@
 
         <NavBar />
 
-        <Locked v-if="useRuntimeConfig().public.locked" />
+        <Locked v-if="useRuntimeConfig().public.NUXT_PUBLIC_LOCKED === 'true'" />
         <div v-else class="content h-[calc(100vh-56px)] p-4">
             <slot />
         </div>

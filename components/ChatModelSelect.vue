@@ -15,6 +15,7 @@
 
         <button
             class="bg-red-300 text-[#555] hover:bg-red-500 hover:text-white cursor-pointer p-2.5 text-sm font-bold"
+            @click="appState.deleteCurrentChat()"
         >
             Delete current chat
         </button>

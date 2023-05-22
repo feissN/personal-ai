@@ -55,7 +55,6 @@ watch(
             const chunks = props.chatItem.text.split(" ");
 
             for (const chunk of chunks) {
-                props.chatItem.noBuild = true;
                 await sleep(100);
                 displayText.value += `${chunk} `;
             }

@@ -66,6 +66,10 @@ export const useAppState = defineStore("appState", {
 
             activeBotHistory.push(botItem);
         },
+        deleteCurrentChat() {
+            this.chatHistories.delete(this.activeModel);
+            this.botHistories.delete(this.activeModel);
+        },
         async checkUserDocs() {
             const userState = useUserState();
 

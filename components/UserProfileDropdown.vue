@@ -1,4 +1,9 @@
 <template>
+    <div
+        v-if="showDropdown"
+        class="fixed top-0 left-0 w-screen h-screen z-[49]"
+        @click="showDropdown = false"
+    ></div>
     <div v-if="userState.user">
         <div class="anchor cursor-pointer relative" @click="showDropdown = !showDropdown">
             <img

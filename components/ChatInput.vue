@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col justify-center items-center">
         <div
-            v-if="appStore.appState === 'broken'"
+            v-if="appStore.botState === 'broken'"
             class="text-red-500 bg-gray-600 p-4 font-bold cursor-pointer"
             @click="reload"
         >
@@ -13,7 +13,7 @@
         >
             <div
                 class="p-3 flex items-center gap-2 flex-1 bg-[#111]"
-                :class="appStore.appState === 'broken' ? 'brightness-75' : ''"
+                :class="appStore.botState === 'broken' ? 'brightness-75' : ''"
             >
                 <textarea
                     ref="textareaRef"
@@ -22,10 +22,10 @@
                     class="outline-none disabled:cursor-not-allowed w-full resize-none h-6 bg-[#111] text-white"
                     placeholder="Your message"
                     @keydown="handleInput"
-                    :disabled="appStore.appState === 'broken'"
+                    :disabled="appStore.botState === 'broken'"
                 ></textarea>
                 <button
-                    :disabled="appStore.appState !== 'ready'"
+                    :disabled="appStore.botState !== 'ready'"
                     class="bg-white text-[#111] rounded-full min-w-[1.75rem] min-h-[1.75rem] w-7 h-7 flex justify-center items-center pr-0.5 disabled:cursor-not-allowed disabled:opacity-50 self-end"
                 >
                     <ClientOnly>
@@ -65,9 +65,9 @@ const handleInput = async (event: KeyboardEvent) => {
     if (event.key !== "Enter") return;
 
     if (
-        appStore.appState === "broken" ||
-        appStore.appState === "loading" ||
-        appStore.appState === "thinking"
+        appStore.botState === "broken" ||
+        appStore.botState === "loading" ||
+        appStore.botState === "thinking"
     ) {
         event.preventDefault();
         return;

@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-[#555] text-white p-2 flex items-end gap-2 flex-col md:flex-row">
+    <div class="bg-[#555] text-white p-2 flex md:items-end gap-2 flex-col md:flex-row">
         <label class="flex-1">
             <span>Select your model:</span>
             <select

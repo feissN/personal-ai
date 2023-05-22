@@ -18,7 +18,10 @@ const appState = useAppState();
 
 useHead({
     title: "PDF-Aware personal AI Chatbot",
-    meta: [{ name: "description", content: "PDF-Aware personal AI Chatbot by feissn" }],
+    meta: [
+        { name: "description", content: "PDF-Aware personal AI Chatbot by feissn" },
+        { name: "author", content: "feissN - https://github.com/feissN/" },
+    ],
     htmlAttrs: {
         lang: "en",
     },

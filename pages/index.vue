@@ -1,7 +1,6 @@
 <template>
-    <!-- <ChatBot v-if="userState.user" />
-    <Welcome v-else /> -->
-    <ChatBot />
+    <ChatBot v-if="userState.user" />
+    <Welcome v-else />
 </template>
 
 <script setup lang="ts">

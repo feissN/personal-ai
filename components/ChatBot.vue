@@ -3,12 +3,7 @@
         v-if="appState.trainedModels.length"
         class="text-white flex flex-col gap-2 relative h-full"
     >
-        <ChatModelSelect
-            :models="appState.trainedModels"
-            :selected-model="appState.activeModel"
-            @select-model="selectModel"
-            class="w-full"
-        />
+        <ChatModelSelect class="w-full" />
         <ChatHistory class="h-full" />
         <ChatInput @send="send" />
     </div>
@@ -32,24 +27,15 @@ import { useUserState } from "~/stores/userState";
 import type { ChatItem } from "~/types/chatItem";
 import { ChatRequest } from "~/types/request";
 
+/**
+ * TODOS:
+ * - Delete chat button
+ * - Hashmap of chats in store
+ */
+
 const router = useRouter();
 const userState = useUserState();
 const appState = useAppState();
-
-const selectModel = (modelName: string) => {
-    appState.activeModel = modelName;
-
-    appState.chatHistory = [
-        {
-            fromHuman: false,
-            index: 0,
-            state: "finished",
-            text: "Hello! How can I assist you?",
-            noBuild: true,
-        },
-    ];
-    appState.botHistory = [];
-};
 
 const send = async (message: string) => {
     if (appState.botState !== "ready" || !userState.user) {
@@ -59,20 +45,20 @@ const send = async (message: string) => {
 
     appState.botState = "thinking";
 
-    appState.chatHistory.push({
+    appState.addToActiveChatHistory({
         text: message,
         fromHuman: true,
-        index: appState.chatHistory.length,
+        index: appState.activeChatHistory.length,
         state: "finished",
         noBuild: true,
     });
 
     await sleep(250);
 
-    appState.chatHistory.push({
+    appState.addToActiveChatHistory({
         text: "",
         fromHuman: false,
-        index: appState.chatHistory.length,
+        index: appState.activeChatHistory.length,
         state: "typing",
     });
 
@@ -82,7 +68,7 @@ const send = async (message: string) => {
             question: message,
             userId: userState.user.uid,
             modelName: appState.activeModel,
-            history: JSON.parse(JSON.stringify(appState.botHistory)),
+            history: JSON.parse(JSON.stringify(appState.activeBotHistory)),
         } as ChatRequest,
         retry: false,
     });
@@ -93,7 +79,7 @@ const send = async (message: string) => {
 const handleAIResponse = (res: _AsyncData<any, any>, message: string) => {
     appState.botState = "thinking";
 
-    const lastItem = appState.chatHistory.at(-1);
+    const lastItem = appState.activeChatHistory.at(-1);
     if (!lastItem) {
         const newChatItem: ChatItem = {
             fromHuman: false,
@@ -105,7 +91,7 @@ const handleAIResponse = (res: _AsyncData<any, any>, message: string) => {
         appState.botState = "broken";
 
         if (!res.data || !res.data.value || !res.data.value.message) {
-            appState.chatHistory.push(newChatItem);
+            appState.addToActiveChatHistory(newChatItem);
             appState.botState = "broken";
 
             return;
@@ -113,9 +99,9 @@ const handleAIResponse = (res: _AsyncData<any, any>, message: string) => {
 
         newChatItem.text = res.data.value.message.trim();
         newChatItem.state = "finished";
-        appState.chatHistory.push(newChatItem);
+        appState.addToActiveChatHistory(newChatItem);
         appState.botState = "ready";
-        appState.botHistory?.push([message, newChatItem.text]);
+        appState.addToActiveBotHistory([message, newChatItem.text]);
 
         return;
     }
@@ -131,6 +117,6 @@ const handleAIResponse = (res: _AsyncData<any, any>, message: string) => {
     lastItem.text = res.data.value.message.trim();
     lastItem.state = "finished";
     appState.botState = "ready";
-    appState.botHistory?.push([message, lastItem.text]);
+    appState.addToActiveBotHistory([message, lastItem.text]);
 };
 </script>

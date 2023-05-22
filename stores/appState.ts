@@ -9,11 +9,11 @@ type AppState = {
     loading: boolean;
     trainedModels: TrainedModelInfo[];
     activeModel: string;
-    chatHistory: ChatItem[];
-    botHistory: [string, string][];
+    chatHistories: Map<string, ChatItem[]>;
+    botHistories: Map<string, [string, string][]>;
 };
 
-const initialChatHistory = {
+const initialChatHistory: ChatItem = {
     fromHuman: false,
     index: 0,
     state: "finished",
@@ -28,11 +28,44 @@ export const useAppState = defineStore("appState", {
             loading: true,
             trainedModels: [],
             activeModel: "",
-            chatHistory: [initialChatHistory],
-            botHistory: [],
+            chatHistories: new Map(),
+            botHistories: new Map(),
         } as AppState),
+    getters: {
+        activeChatHistory: (state) => {
+            if (!state.activeModel) return [];
+            const activeHistory = state.chatHistories.get(state.activeModel);
 
+            if (!activeHistory) {
+                state.chatHistories.set(state.activeModel, [initialChatHistory]);
+                return state.chatHistories.get(state.activeModel) || [];
+            }
+
+            return activeHistory;
+        },
+        activeBotHistory: (state) => {
+            return state.botHistories.get(state.activeModel) || [];
+        },
+    },
     actions: {
+        addToActiveChatHistory(chatItem: ChatItem) {
+            const activeChatHistory = this.chatHistories.get(this.activeModel);
+            if (!activeChatHistory) {
+                this.chatHistories.set(this.activeModel, [chatItem]);
+                return;
+            }
+
+            activeChatHistory.push(chatItem);
+        },
+        addToActiveBotHistory(botItem: [string, string]) {
+            const activeBotHistory = this.botHistories.get(this.activeModel);
+            if (!activeBotHistory) {
+                this.botHistories.set(this.activeModel, [botItem]);
+                return;
+            }
+
+            activeBotHistory.push(botItem);
+        },
         async checkUserDocs() {
             const userState = useUserState();
 
@@ -124,6 +157,9 @@ export const useAppState = defineStore("appState", {
                 }
 
                 console.log(data.value);
+
+                this.chatHistories.delete(modelName);
+                this.botHistories.delete(modelName);
 
                 console.log("deleted model!");
                 await this.checkUserDocs();

@@ -2,7 +2,7 @@
     <div class="flex flex-col justify-center items-center">
         <div
             v-if="appStore.botState === 'broken'"
-            class="text-red-500 bg-gray-600 p-4 font-bold cursor-pointer"
+            class="text-white bg-[#A11111] p-4 font-bold cursor-pointer"
             @click="reload"
         >
             Broken - Reload
@@ -27,6 +27,7 @@
                 <button
                     :disabled="appStore.botState !== 'ready'"
                     class="bg-white text-[#111] rounded-full min-w-[1.75rem] min-h-[1.75rem] w-7 h-7 flex justify-center items-center pr-0.5 disabled:cursor-not-allowed disabled:opacity-50 self-end"
+                    aria-label="'Send' button"
                 >
                     <ClientOnly>
                         <font-awesome-icon icon="fa-solid fa-paper-plane" />
@@ -90,8 +91,7 @@ const resizeTextArea = () => {
     if (!textareaRef.value) return;
 
     textareaRef.value.style.height = "";
-    textareaRef.value.style.height =
-        Math.min(textareaRef.value.scrollHeight + 2, 150) + "px";
+    textareaRef.value.style.height = Math.min(textareaRef.value.scrollHeight + 2, 150) + "px";
 };
 
 const send = async () => {

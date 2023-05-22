@@ -16,6 +16,14 @@ import { useAppState } from "./stores/appState";
 const userState = useUserState();
 const appState = useAppState();
 
+useHead({
+    title: "PDF-Aware personal AI Chatbot",
+    meta: [{ name: "description", content: "PDF-Aware personal AI Chatbot by feissn" }],
+    htmlAttrs: {
+        lang: "en",
+    },
+});
+
 onMounted(() => {
     onAuthStateChanged(auth, (user) => {
         userState.user = user;

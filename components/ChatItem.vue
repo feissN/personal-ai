@@ -15,9 +15,13 @@
 
         <div
             class="whitespace-pre-wrap self-start"
-            :class="chatItem.state === 'canceled' ? `text-red-500 before:content-['Error:_']` : ''"
+            :class="
+                chatItem.state === 'canceled' ? `text-[#A11111] before:content-['Error:_']` : ''
+            "
         >
-            <span class="word-break" :class="chatItem.state === 'typing'">{{ chatItem.text || "typing..." }}</span>
+            <span class="word-break" :class="chatItem.state === 'typing'">{{
+                chatItem.text || "typing..."
+            }}</span>
         </div>
     </div>
 </template>

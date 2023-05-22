@@ -13,6 +13,7 @@
         <button
             class="px-4 py-2 bg-white text-black font-semibold"
             @click="router.push('/profile')"
+            aria-label="'Your profile' button"
         >
             Your profile
         </button>

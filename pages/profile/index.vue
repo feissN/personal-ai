@@ -22,6 +22,7 @@
             <button
                 class="bg-[#eee] text-black font-bold p-2 cursor-pointer"
                 @click="uploadDocument"
+                aria-label="'Upload document' button"
             >
                 Upload document
             </button>
@@ -43,7 +44,7 @@
                     </span>
                     <button
                         @click="deleteModel(infoItem.modelName)"
-                        class="mt-2 px-2 py-2 bg-red-300 text-[#555] hover:bg-red-500 hover:text-white"
+                        class="mt-2 px-2 py-2 bg-[#A11111] text-white hover:bg-[#891010]"
                     >
                         Delete
                     </button>

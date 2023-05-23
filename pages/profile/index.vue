@@ -5,7 +5,7 @@
         <div class="flex my-4 gap-2 flex-col">
             <div>
                 <input
-                    class="cursor-pointer block w-full text-sm focus:z-10 focus:border-[#222] focus:ring-[#222] dark:bg-[#222] dark:border-[#444] dark:text-white file:bg-transparent file:border-0 file:bg-[#444] file:mr-4 file:py-3 file:px-4 file:cursor-pointer file:text-white rounded-lg"
+                    class="cursor-pointer block w-full text-sm focus:z-10 focus:border-[#222] focus:ring-[#222] bg-[#111] border-[#111] text-white file:bg-transparent file:border-0 file:bg-[#444] file:mr-4 file:py-3 file:px-4 file:cursor-pointer file:text-white rounded-lg"
                     type="file"
                     :multiple="false"
                     accept="application/pdf"
@@ -17,10 +17,10 @@
                 type="text"
                 placeholder="Model Name"
                 v-model="modelName"
-                class="px-4 py-2 text-white focus:outline-none bg-[#222] rounded-lg"
+                class="px-4 py-2 text-white focus:outline-none bg-[#111] rounded-lg"
             />
             <button
-                class="bg-[#eee] text-black font-bold p-2 cursor-pointer rounded-lg"
+                class="bg-[#eee] text-[#111] font-bold p-2 cursor-pointer rounded-lg"
                 @click="uploadDocument"
                 aria-label="'Upload document' button"
             >
@@ -33,7 +33,7 @@
             <div class="flex gap-2 flex-wrap flex-col md:flex-row" v-auto-animate>
                 <div
                     v-for="infoItem in appState.trainedModels"
-                    class="p-4 bg-[#555] text-white flex flex-col rounded-lg"
+                    class="p-4 bg-[#222] text-white flex flex-col rounded-lg"
                     :key="infoItem.modelName"
                 >
                     <span>

@@ -3,7 +3,7 @@
         <label class="flex-1">
             <span>Select your model:</span>
             <select
-                class="bg-[#222] text-white text-sm block w-full p-2.5 rounded-lg"
+                class="bg-[#111] text-white text-sm block w-full p-2.5 rounded-lg"
                 @change="selectModel"
                 :value="appState.activeModel"
             >

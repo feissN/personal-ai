@@ -11,7 +11,7 @@
         <div class="font-bold text-3xl">No model trained yet!</div>
         <div class="font-semibold text-xl">You can train your model in your profile</div>
         <button
-            class="px-4 py-2 bg-white text-black font-semibold"
+            class="px-4 py-2 bg-white text-black font-semibold rounded-lg"
             @click="router.push('/profile')"
             aria-label="'Your profile' button"
         >

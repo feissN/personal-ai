@@ -1,7 +1,7 @@
 <template>
     <div
-        class="chat-item flex items-center gap-2 p-2 w-fit text-white"
-        :class="chatItem.fromHuman ? 'flex-row-reverse self-end bg-[#111]' : 'bg-[#222]'"
+        class="chat-item flex items-center gap-2 p-2 w-fit text-white rounded-full"
+        :class="chatItem.fromHuman ? 'flex-row-reverse self-end bg-[#111] pl-3' : 'bg-[#222] pr-3'"
         ref="itemRef"
     >
         <ClientOnly>
@@ -14,7 +14,7 @@
         </ClientOnly>
 
         <div
-            class="whitespace-pre-wrap self-start"
+            class="whitespace-pre-wrap self-start pt-[1px]"
             :class="
                 chatItem.state === 'canceled' ? `text-[#A11111] before:content-['Error:_']` : ''
             "
@@ -28,7 +28,6 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { sleep } from "~/server/utils/global.utils";
 
 const props = defineProps<{
     chatItem: {

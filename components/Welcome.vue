@@ -5,7 +5,7 @@
         <div class="text-2xl">Login to start chatting with your Documents!</div>
 
         <button
-            class="px-4 py-2 bg-white text-black text-2xl"
+            class="px-4 py-2 bg-white text-black text-2xl rounded-lg"
             @click="googleLogin"
             aria-label="'Login with Google' button"
         >

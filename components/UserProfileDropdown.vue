@@ -16,7 +16,7 @@
                 {{ userState.user.displayName }}
             </div>
 
-            <div v-if="showDropdown" class="dropdown absolute right-0 top-10 z-50 bg-[#444] w-32">
+            <div v-if="showDropdown" class="dropdown absolute right-0 top-10 z-50 bg-[#444] w-32 rounded-lg overflow-hidden">
                 <ul class="flex flex-col">
                     <li class="px-4 py-2 hover:bg-[#353535]" @click="router.push('/')">Chatbot</li>
                     <li class="px-4 py-2 hover:bg-[#353535]" @click="router.push('profile')">

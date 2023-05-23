@@ -12,14 +12,14 @@
             class="new-message p-2 flex justify-center items-center gap-2 w-full"
         >
             <div
-                class="p-3 flex items-center gap-2 flex-1 bg-[#111]"
+                class="p-3 flex items-center gap-2 flex-1 bg-[#111] rounded-full"
                 :class="appStore.botState === 'broken' ? 'brightness-75' : ''"
             >
                 <textarea
                     ref="textareaRef"
                     type="text"
                     v-model="currentMessage"
-                    class="outline-none disabled:cursor-not-allowed w-full resize-none h-6 bg-[#111] text-white"
+                    class="outline-none disabled:cursor-not-allowed w-full resize-none h-6 bg-[#111] text-white ml-2"
                     placeholder="Your message"
                     @keydown="handleInput"
                     :disabled="appStore.botState === 'broken'"
